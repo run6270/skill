@@ -70,6 +70,37 @@ curl -s "https://api.llama.fi/v2/chains" | jq '.[] | select(.name=="Conflux")'
 
 ## 订单簿数据
 
+### 交易所列表（2026-02-07更新）
+
+| 交易所 | 状态 | 数据获取方式 |
+|--------|------|--------------|
+| Binance | ✅ 主导 | API |
+| **Kraken** | 🆕 新上市 | MCP/WebFetch |
+| Gate.io | ✅ | API |
+| MEXC | ✅ | API |
+| OKX | ✅ | API |
+
+### Kraken CFX数据获取（2026-02-07新增）
+
+> **重要**：Kraken 于 2026-02-03 上市 CFX，必须单独获取数据
+
+**方案A（优先）：MCP浏览器**
+```
+mcp__chrome-devtools__navigate_page → https://www.kraken.com/zh-cn/prices/conflux
+mcp__chrome-devtools__take_snapshot
+```
+
+**提取字段**：
+- 24h成交量（如 $23,133,567）
+- 买卖比例（如 68% 买入 / 32% 卖出）
+- 今日购买量（如 454,445,870 CFX）
+
+**方案B（备用）：WebFetch**
+```
+WebFetch → https://www.kraken.com/prices/conflux
+提示词: "Extract CFX 24h trading volume, buy/sell ratio, price"
+```
+
 ### Python脚本获取四交易所数据
 
 ```python

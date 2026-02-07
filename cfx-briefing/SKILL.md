@@ -29,8 +29,18 @@ curl -s "https://api.coingecko.com/api/v3/simple/price?ids=conflux-token&vs_curr
 # 2. TVL（从chains API提取✅）
 curl -s "https://api.llama.fi/v2/chains" | python3 -c "import sys,json; data=json.load(sys.stdin); cfx=[c for c in data if c.get('name')=='Conflux']; print(cfx[0]['tvl'] if cfx else 'N/A')"
 
-# 3. 订单簿
+# 3. 订单簿（含Kraken）
 python3 /Users/mac/Documents/GitHub/CFX-DWF行情/scripts/fetch_orderbook.py
+
+# 3b. Kraken CFX数据（新上市交易所）⭐ 2026-02-07新增
+# 方案A：MCP浏览器获取
+mcp__chrome-devtools__navigate_page → https://www.kraken.com/zh-cn/prices/conflux
+mcp__chrome-devtools__take_snapshot
+# 提取：24h成交量、买卖比例
+
+# 方案B：WebFetch备用
+WebFetch → https://www.kraken.com/prices/conflux
+提示词: "Extract CFX 24h trading volume, buy/sell ratio"
 
 # 4. Grok推特（16账号）- 先读取.env获取API Key
 cat /Users/mac/Documents/GitHub/CFX-DWF行情/.env  # 获取 XAI_API_KEY
@@ -130,7 +140,9 @@ open /Users/mac/Documents/GitHub/CFX-DWF行情/CFX简报_YYYY-MM-DD.html
    - 对价格的影响分析（利好🟢/利空🔴/中性🟡）
    - 行动建议（投票、发声、仓位调整）
    - 如无进行中提案，显示"当前无进行中的治理投票"
-3. **订单簿**: 4交易所买卖深度
+3. **订单簿**: 5交易所数据（Binance、Kraken🆕、Gate、MEXC、OKX）
+   - **Kraken**：2026-02-03新上市，必须单独获取数据
+   - 展示：价格、24h涨跌、24h成交量、买卖比例
 4. **巨鲸持仓**: Top10/20/50/100 + 7日异动
 5. **链上数据**: TVL、AxCNH（含降级处理）、账户数
    - AxCNH数据不可用时显示：`⚠️ AxCNH数据暂时不可用（eSpace浏览器访问受限）`
