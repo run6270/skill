@@ -13,159 +13,145 @@ context: fork
 | `CFX` / `CFX --api` | HTML |
 | `CFX --md` | Markdown |
 
-## 执行流程（3步，全自动）
+## 自动执行权限（全部已配置，无需手动确认）
 
-> **已验证的API端点** (2026-01-16测试通过)
+settings.local.json 已配置以下自动执行规则：
+- `WebSearch` / `WebFetch` - 所有网络访问
+- `Bash(curl:*)` / `Bash(python3:*)` / `Bash(timeout:*)` - 所有命令
+- `mcp__chrome-devtools__*` - 所有浏览器自动化
+- `Bash(open:*)` / `Bash(git:*)` - 文件和版本控制
 
-### Step 1: 并行获取数据（6个请求同时发）⭐ 新增治理投票
+## 执行流程（全自动，零确认）
 
-**直接执行，不询问确认：**
+### Step 1: 并行获取7类数据
 
+**使用 Task 工具并行派发7个 Agent，每个负责一类数据：**
+
+#### Agent 1: 价格数据
 ```bash
-# 1. 价格（DefiLlama优先✅，CoinGecko备用✅）
-curl -s "https://coins.llama.fi/prices/current/coingecko:conflux-token" || \
-curl -s "https://api.coingecko.com/api/v3/simple/price?ids=conflux-token&vs_currencies=usd&include_24hr_change=true"
+# CoinGecko API（已验证 2026-02-10）
+curl -s "https://api.coingecko.com/api/v3/coins/conflux-token?localization=false&tickers=false&community_data=false&developer_data=false&sparkline=false"
+# 提取: current_price, price_change_percentage_24h, price_change_percentage_7d, market_cap, total_volume, circulating_supply
+# 写入: /tmp/cfx-price.json
+```
 
-# 2. TVL（从chains API提取✅）
-curl -s "https://api.llama.fi/v2/chains" | python3 -c "import sys,json; data=json.load(sys.stdin); cfx=[c for c in data if c.get('name')=='Conflux']; print(cfx[0]['tvl'] if cfx else 'N/A')"
+#### Agent 2: 订单簿数据（4交易所）
+```python
+# Python urllib 获取 Binance/OKX/Gate/MEXC ticker + orderbook
+# Binance: https://api.binance.com/api/v3/ticker/24hr?symbol=CFXUSDT
+#          https://api.binance.com/api/v3/depth?symbol=CFXUSDT&limit=100
+# OKX:     https://www.okx.com/api/v5/market/ticker?instId=CFX-USDT
+# Gate:    https://api.gateio.ws/api/v4/spot/tickers?currency_pair=CFX_USDT
+# MEXC:    https://api.mexc.com/api/v3/ticker/24hr?symbol=CFXUSDT
+# 写入: /tmp/cfx-orderbook.json
+```
 
-# 3. 订单簿（含Kraken）
-python3 /Users/mac/Documents/GitHub/CFX-DWF行情/scripts/fetch_orderbook.py
+#### Agent 3: 推特动态（Grok Agent Tools API）
+```bash
+# ⚠️ 新API（2026-02-05更新）- 旧 Live Search API 已弃用
+# Endpoint: https://api.x.ai/v1/responses
+# Model: grok-4-1-fast
+# 工具: x_search（最多10个账号/批次，需分2批）
 
-# 3b. Kraken CFX数据（新上市交易所）⭐ 2026-02-07新增
-# 方案A：MCP浏览器获取
-mcp__chrome-devtools__navigate_page → https://www.kraken.com/zh-cn/prices/conflux
-mcp__chrome-devtools__take_snapshot
-# 提取：24h成交量、买卖比例
-
-# 方案B：WebFetch备用
-WebFetch → https://www.kraken.com/prices/conflux
-提示词: "Extract CFX 24h trading volume, buy/sell ratio"
-
-# 4. Grok推特（16账号）- 先读取.env获取API Key
-cat /Users/mac/Documents/GitHub/CFX-DWF行情/.env  # 获取 XAI_API_KEY
-curl -s --http1.1 --max-time 90 "https://api.x.ai/v1/chat/completions" \
-  -H "Content-Type: application/json" \
+# 批次1（10个）：官方+核心
+curl -s -X POST 'https://api.x.ai/v1/responses' \
   -H "Authorization: Bearer $XAI_API_KEY" \
-  -d '{"model":"grok-3-latest","search_parameters":{"mode":"on","sources":[{"type":"x"}]},"messages":[{"role":"user","content":"Search Twitter for latest posts (past 7 days) from these 16 Conflux accounts: @Conflux_Network @Conflux_Intern @AnchorX_Ltd @SwappiDEX @dForceNet @OfficialNucleon @ABCpospool @forgivenever @estherinweb3 @FanLong16 @GuangYang_9 @CamillaCaban @CikeinWeb3 @Joyzinweb3 @bxiaokang @David6LIANG8\n\nFor each: date, summary (1 line), sentiment (BULLISH/NEUTRAL/SILENT). Return JSON array."}]}'
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "grok-4-1-fast",
+    "input": [{"role": "user", "content": "获取以下账号过去7天推文，分析利好/利空/中性"}],
+    "tools": [{"type": "x_search", "allowed_x_handles": [
+      "Conflux_Network","Conflux_Intern","CamillaCaban","CikeinWeb3",
+      "SwappiDEX","OfficialNucleon","dForcenet","BitUnion_Card",
+      "Joyzinweb3","forgivenever"
+    ]}]
+  }'
 
-# 5. 巨鲸持仓（WebFetch）
+# 批次2（6个）：生态+KOL
+# allowed_x_handles: ["estherinweb3","FanLong16","GuangYang_9","AnchorX_Ltd","HexbitApp","bxiaokang"]
+# 写入: /tmp/cfx-twitter.json
+```
+
+#### Agent 4: 链上数据（ConfluxScan API）
+```bash
+# Core Space 账户增长（已验证）
+curl -s "https://api.confluxscan.io/statistics/account/growth?duration=day&intervalType=day"
+
+# eSpace 账户增长（已验证）
+curl -s "https://evmapi.confluxscan.io/statistics/account/growth?duration=day&intervalType=day"
+
+# AxCNH 供应量（RPC查询）
+python3 scripts/fetch_axcnh_data.py
+# 写入: /tmp/cfx-onchain.json
+```
+
+#### Agent 5: 治理投票（Chrome DevTools MCP）
+```
+mcp__chrome-devtools__navigate_page → https://confluxhub.io/governance/vote/onchain-dao-voting
+mcp__chrome-devtools__take_snapshot
+# 解析: Round轮次、投票期、4个参数(PoW/利率/存储点/费用分享)的当前值/即将生效/投票中
+# 写入: output/governance_data.json
+```
+
+#### Agent 6: 持仓分布
+```
 WebFetch → https://www.coincarp.com/currencies/confluxtoken/richlist/
-
-# 6. DAO 治理投票 ⭐ 新增
-# 方案A（优先）：WebSearch 搜索最新治理提案
-WebSearch → "Conflux CFX governance proposal Round voting status 2026"
-
-# 方案B（备用）：Grok 搜索 Twitter 治理讨论
-curl -s --http1.1 --max-time 60 "https://api.x.ai/v1/chat/completions" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $XAI_API_KEY" \
-  -d '{"model":"grok-3-latest","search_parameters":{"mode":"on","sources":[{"type":"x"}]},"messages":[{"role":"user","content":"Search Twitter for latest Conflux governance voting proposals and status. Keywords: Conflux governance, CFX voting, DAO proposal, Round 20, PoW reward. Return: proposal content, voting status, deadline, sentiment."}]}'
-
-# 方案C（备用）：WebFetch Conflux Forum
-WebFetch → https://forum.conflux.fun/search?q=governance%20voting
+# 提取: Top10/20/50/100占比、大户异动
 ```
 
-**治理投票数据提取目标：**
-- ✅ 提案轮次（如 Round 20）
-- ✅ 提案内容（如 PoW 奖励调整）
-- ✅ 投票状态（赞成/反对/中立比例）
-- ✅ 投票截止日期
-- ✅ 生效日期（如果通过）
-- ⚠️ 如无进行中提案，返回"当前无进行中的治理投票"
-
-### Step 2: 获取AxCNH数据（多重备用方案）
-
-> ✅ **新方案：直接RPC查询链上数据（2026-01-19更新）**
-
-**方案A（优先）：RPC直接查询 - 总供应量**
-```bash
-# 使用Conflux eSpace RPC获取实时总供应量
-python3 /Users/mac/Documents/GitHub/CFX-DWF行情/scripts/fetch_axcnh_data.py
-# 返回JSON: {"success": true, "total_supply": 36128445.4, "total_supply_formatted": "36,128,445", ...}
+#### Agent 7: 新闻消息面
+```
+WebSearch → "Conflux CFX news February 2026"
+# 提取: 官方公告、牌照进展、生态活动
 ```
 
-**方案B（备用）：MCP Chrome DevTools - 持有人数和转移次数**
-```
-mcp__chrome-devtools__navigate_page → https://evm.confluxscan.net/token/0x70bfd7f7eadf9b9827541272589a6b2bb760ae2e
-mcp__chrome-devtools__take_snapshot
-# 提取: Holders count, Transfers count
-```
+### Step 2: 组装HTML简报
 
-**方案C（备用）：WebFetch**
-```
-WebFetch → https://evm.confluxscan.net/token/0x70bfd7f7eadf9b9827541272589a6b2bb760ae2e
-提示词: "Extract: Holders count, Transfers count for AxCNH token"
-```
-
-**方案D（降级）：部分数据展示**
-- 总供应量：✅ 始终可用（通过RPC）
-- 持有人数/转移次数：如果B和C都失败，显示"暂时不可用"
-- **不再使用历史数据**，确保总供应量始终是最新的
-
-**提取目标**：
-- ✅ 总供应量（必有，通过RPC）
-- ⚠️ 持有人数（尽力获取）
-- ⚠️ 转移次数（尽力获取）
-
-### Step 3: 生成HTML并打开
-
-**写入前检查：**
-- ✅ 16个推特账号都有状态
-- ✅ Top10/20/50/100持仓占比
-- ✅ 至少3个交易所订单簿
-- ✅ 价格+24h变化
-- ✅ DAO治理投票状态（必须有，即使是"无进行中提案"）⭐ 新增
-- ⚠️ AxCNH数据（可选，失败则标注"暂时不可用"）
-
-**缺失处理规则：**
-- 核心数据（价格/订单簿/推特/巨鲸/治理投票）缺失 → 重试对应Step
-- DAO治理投票：如搜索无结果，显示"✅ 当前无进行中的治理投票"
-- AxCNH数据缺失 → 使用降级文案，不阻塞生成
-- 不使用占位符
+使用 Python 脚本读取所有数据文件，替换 HTML 模板中的 `{{PLACEHOLDER}}` 变量：
 
 ```bash
-Write → /Users/mac/Documents/GitHub/CFX-DWF行情/CFX简报_YYYY-MM-DD.html
-open /Users/mac/Documents/GitHub/CFX-DWF行情/CFX简报_YYYY-MM-DD.html
+python3 << 'EOF'
+# 读取模板: templates/cfx_briefing_template.html
+# 读取数据: /tmp/cfx-price.json, /tmp/cfx-twitter.json, etc.
+# 替换所有 {{PLACEHOLDER}}
+# 添加治理投票章节（模板中无此章节，需动态插入）
+# 写入: output/cfx_briefing_YYYY-MM-DD.html
+EOF
 ```
 
-## HTML 9章节（⭐ 新增 DAO 治理投票）
+### Step 3: 打开简报
+```bash
+open output/cfx_briefing_YYYY-MM-DD.html
+```
+
+## HTML 9章节
 
 1. **价格概览**: 当前价、成本$0.26、浮亏%、回本涨幅%
-2. **DAO 治理投票** ⭐ 新增必须章节
-   - 当前进行中的治理提案（如 Round 20）
-   - 提案内容（如 PoW 奖励调整：0.80 → 1.60 CFX/Block）
-   - 投票状态（赞成/反对/中立比例）
-   - 投票截止日期和生效日期
-   - 对价格的影响分析（利好🟢/利空🔴/中性🟡）
-   - 行动建议（投票、发声、仓位调整）
-   - 如无进行中提案，显示"当前无进行中的治理投票"
-3. **订单簿**: 5交易所数据（Binance、Kraken🆕、Gate、MEXC、OKX）
-   - **Kraken**：2026-02-03新上市，必须单独获取数据
-   - 展示：价格、24h涨跌、24h成交量、买卖比例
-4. **巨鲸持仓**: Top10/20/50/100 + 7日异动
-5. **链上数据**: TVL、AxCNH（含降级处理）、账户数
-   - AxCNH数据不可用时显示：`⚠️ AxCNH数据暂时不可用（eSpace浏览器访问受限）`
-   - 保留章节结构，不影响其他数据展示
-6. **推特动态**: 利好/中性/沉默分类
-7. **生态激励**: 当前活动
+2. **订单簿**: 4交易所(Binance/OKX/Gate/HTX)价格+深度+可视化
+3. **持仓分布**: Top10/20/50/100占比 + 大户动向
+4. **链上数据**: Core Space + eSpace账户数 + AxCNH供应量
+5. **治理投票**: Round轮次、4参数投票状态、影响分析
+6. **推特动态**: 利好/利空/中性三栏分类
+7. **消息面**: 官方公告、牌照、生态活动
 8. **风险警告**: 数据风险提示
-9. **操作建议**: 止盈目标
+9. **汇总统计**: 四所Bid/Ask总深度、TVL、eSpace账户
 
-## 计算
+## 计算公式
 
 ```
 浮亏% = (price - 0.26) / 0.26 * 100
 回本涨幅% = (0.26 - price) / price * 100
+Bid/Ask比 = bid_depth / ask_depth
+深度条百分比 = bid / (bid + ask) * 100
 ```
 
 ## 禁止
 
-- ❌ 询问确认
-- ❌ 分多次写HTML
-- ❌ 跳过推特/巨鲸/治理投票 ⭐ 新增
-- ❌ 用占位符
-- ❌ 治理投票章节留空（必须显示状态或"无进行中提案"）
+- ❌ 询问确认（所有操作自动执行）
+- ❌ 跳过任何章节
+- ❌ 用占位符或"暂无数据"
+- ❌ 默认输出Markdown（除非 `--md`）
+- ❌ 使用旧的 Grok API（`/v1/chat/completions` 已弃用）
 
 ## 用户背景
 
