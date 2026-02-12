@@ -2,6 +2,7 @@
 name: cfx-briefing
 description: CFX投资简报生成器。输入"CFX"或"CFX --api"生成HTML简报。
 context: fork
+base_dir_key: cfx-briefing
 ---
 
 # CFX 投资简报生成器
@@ -12,6 +13,28 @@ context: fork
 |------|------|
 | `CFX` / `CFX --api` | HTML |
 | `CFX --md` | Markdown |
+
+## 初始化（首次运行自动执行）
+
+> 每次执行简报前，先检查 `~/.claude/CLAUDE.md` 中是否已记录项目目录。
+
+**检查逻辑：**
+1. 读取 `~/.claude/CLAUDE.md`，查找是否包含 `cfx-briefing skill 的项目目录在：`
+2. **如果已存在**：直接使用记录的路径作为 `$CFX_PROJECT_DIR`，跳到执行流程
+3. **如果不存在**：执行以下初始化步骤
+
+**初始化步骤：**
+1. 将当前工作目录写入 `~/.claude/CLAUDE.md`，追加一行：
+   ```
+   - cfx-briefing skill 的项目目录在：<当前工作目录>
+   ```
+2. 后续新会话无需再询问目录位置，所有路径基于 `$CFX_PROJECT_DIR` 解析
+
+**路径引用规则：**
+- 脚本路径：`$CFX_PROJECT_DIR/scripts/fetch_orderbook.py`
+- 模板路径：`$CFX_PROJECT_DIR/templates/cfx_briefing_template.html`
+- 输出路径：`$CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html`
+- 环境变量：`$CFX_PROJECT_DIR/.env`
 
 ## 自动执行权限（全部已配置，无需手动确认）
 
