@@ -157,15 +157,18 @@ def calculate_depth(orderbook, current_price, depth_percent=10):
 
 ---
 
-## Grok API调用
+## Grok API调用（2026-02-05更新 - Agent Tools API）
+
+> ⚠️ 旧的 Live Search API (`/v1/chat/completions`) 已于 2026年1月12日弃用
 
 ### 配置
 
 | 配置项 | 值 |
 |--------|-----|
 | **API Key位置** | `.env` 文件中的 `XAI_API_KEY` |
-| **Endpoint** | `https://api.x.ai/v1/chat/completions` |
-| **模型** | `grok-3-latest` |
+| **Endpoint** | `https://api.x.ai/v1/responses` |
+| **模型** | `grok-4-1-fast` |
+| **搜索工具** | `tools: [{"type": "x_search"}]` |
 
 ### 调用命令（自动执行）
 
@@ -173,17 +176,20 @@ def calculate_depth(orderbook, current_price, depth_percent=10):
 # 先读取API Key
 cat /Users/mac/Documents/GitHub/CFX-DWF行情/.env
 
-# 调用API（单行命令）
-export XAI_API_KEY="key值" && curl -s --http1.1 --max-time 120 "https://api.x.ai/v1/chat/completions" -H "Content-Type: application/json" -H "Authorization: Bearer $XAI_API_KEY" -d '{"model":"grok-3-latest","messages":[{"role":"user","content":"英文Prompt..."}],"search_parameters":{"mode":"on","sources":[{"type":"x"}]}}'
+# 新API调用（分批，每批最多10个账号）
+export XAI_API_KEY="key值" && curl -s -X POST 'https://api.x.ai/v1/responses' \
+  -H "Authorization: Bearer $XAI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"grok-4-1-fast","input":[{"role":"user","content":"英文Prompt..."}],"tools":[{"type":"x_search","allowed_x_handles":["账号1","账号2"]}]}'
 ```
 
 ### 关键参数
 
 | 参数 | 值 | 说明 |
 |------|-----|------|
-| `--http1.1` | 必须 | 避免HTTP/2错误 |
-| `mode` | `"on"` | 必须设为on启用搜索 |
-| `sources` | `[{"type":"x"}]` | 访问Twitter数据 |
+| `allowed_x_handles` | 最多10个 | 超过需分批请求 |
+| 响应字段 | `output[].content[].text` | 文本内容 |
+| 注释字段 | `annotations` | 引用来源 |
 | Prompt语言 | **英文** | 中文会返回过时数据！ |
 
 ---
@@ -222,3 +228,39 @@ https://www.coincarp.com/currencies/confluxtoken/richlist/
 ```
 
 提取：Top 10/20/50/100 占比
+
+### 重点监控地址（2026-02-13更新）
+
+#### 0xe2fc...93ae1 — Binance Withdrawals 7
+
+| 项目 | 详情 |
+|------|------|
+| **完整地址** | `0xe2fc31f816a9b94326492132018c3aecc4a93ae1` |
+| **身份** | Binance 官方提币热钱包（Etherscan标签: Binance: Withdrawals 7） |
+| **CoinCarp排名** | #22 |
+| **多链总资产** | ~$191M（跨9条链） |
+| **BSC资产** | $3.87M BNB + $12.15M 代币（含 7,057,649 bCFX） |
+| **BSC交易数** | 45.5M 笔 |
+| **资金来源** | Binance 51（内部调拨钱包） |
+| **查询链接** | Etherscan / BSCScan / Blockscan |
+
+**解读规则**：
+- 此地址减持CFX = Binance用户提币（看涨：用户转入自托管）
+- 此地址增持CFX = 用户充值到Binance（看跌：可能准备卖出）
+- 大额变动反映交易所资金流向，是重要的市场情绪指标
+
+#### 0x83da...66d84 — cryptomoonwalker.bnb 冷存储
+
+| 项目 | 详情 |
+|------|------|
+| **完整地址** | `0x83da47ab9d850e2352edc200f172dbab39f66d84` |
+| **身份** | cryptomoonwalker.bnb 控制的冷存储钱包 |
+| **CoinCarp排名** | #27 |
+| **行为特征** | 纯积累，零卖出，所有资金单向流入 |
+| **BSC持仓** | 2021-2022年购入多种代币（长期持有风格） |
+| **资金来源** | cryptomoonwalker.bnb 单一来源 |
+
+**解读规则**：
+- 持续增持 = 聪明钱看好CFX长期价值
+- 首次卖出 = 重大信号，需立即关注
+- 增持速度加快 = 可能预期短期利好
