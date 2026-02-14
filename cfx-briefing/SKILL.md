@@ -14,147 +14,369 @@ base_dir_key: cfx-briefing
 | `CFX` / `CFX --api` | HTML |
 | `CFX --md` | Markdown |
 
-## 初始化（首次运行自动执行）
+## 初始化
 
-> 每次执行简报前，先检查 `~/.claude/CLAUDE.md` 中是否已记录项目目录。
+1. 读取 `~/.claude/CLAUDE.md`，查找 `cfx-briefing skill 的项目目录在：`
+2. **已存在** → 使用该路径作为 `$CFX_PROJECT_DIR`
+3. **不存在** → 追加 `- cfx-briefing skill 的项目目录在：<当前工作目录>` 到 `~/.claude/CLAUDE.md`
 
-**检查逻辑：**
-1. 读取 `~/.claude/CLAUDE.md`，查找是否包含 `cfx-briefing skill 的项目目录在：`
-2. **如果已存在**：直接使用记录的路径作为 `$CFX_PROJECT_DIR`，跳到执行流程
-3. **如果不存在**：将当前工作目录追加到 `~/.claude/CLAUDE.md`：
-   ```
-   - cfx-briefing skill 的项目目录在：<当前工作目录>
-   ```
+路径约定：
+- 输出：`$CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html`
+- 环境变量：`$CFX_PROJECT_DIR/.env`（含 `XAI_API_KEY`）
 
-**路径引用规则：**
-- 脚本路径：`$CFX_PROJECT_DIR/scripts/fetch_orderbook.py`
-- 输出路径：`$CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html`
-- 环境变量：`$CFX_PROJECT_DIR/.env`
+## 核心规则：零确认 + Agent Teams
 
-## ⚠️ 核心规则：零确认执行
+**全程自动，严禁暂停等待用户确认。**
 
-**本 Skill 的所有操作必须全自动执行，严禁在任何环节暂停等待用户确认。**
+禁止：
+- "是否继续？" / "确认后我开始生成" / "要试备用方案吗？" / "要打开吗？"
 
-具体要求：
-1. **Task Agent 必须使用 `mode: "bypassPermissions"`** — 所有并行 Agent 自动执行所有工具
-2. **不询问"是否继续"** — 数据获取、HTML 生成、文件打开全部自动
-3. **不展示中间结果等确认** — 拿到数据直接进入下一步
-4. **API 失败自动降级** — 不问用户"要不要试备用方案"，直接试
-5. **数据缺失自动标注** — 写"⚠️ 数据暂不可用"，不停下来问
+正确做法：一气呵成，用户只看到最终 HTML。
 
-**错误示范（禁止）：**
-- "我已获取到价格数据，是否继续获取订单簿？" ❌
-- "OKX API 返回 403，要尝试备用方案吗？" ❌
-- "以下是 7 个 Agent 的数据，确认后我开始生成 HTML" ❌
-- "HTML 已生成，要打开吗？" ❌
+---
 
-**正确做法：** 从头到尾一气呵成，用户只看到最终结果。
+## 执行流程（3 步）
 
-## 执行流程（全自动 3 步）
+### Step 0: 读取环境变量
 
-### Step 1: 并行获取 7 类数据
-
-**同时启动 7 个 Task Agent（全部 `mode: "bypassPermissions"`），不等一个完成再启动下一个：**
-
-先读取 `$CFX_PROJECT_DIR/.env` 获取 `XAI_API_KEY`，然后并行派发：
-
-#### Agent 1: 价格数据
-```bash
-curl -s "https://api.coingecko.com/api/v3/coins/conflux-token?localization=false&tickers=false&community_data=false&developer_data=false&sparkline=false"
-# 提取: current_price.usd, price_change_percentage_24h, price_change_percentage_7d, market_cap, total_volume
-# 备用: curl -s "https://coins.llama.fi/prices/current/coingecko:conflux-token"
+```
+读取 $CFX_PROJECT_DIR/.env → 获取 XAI_API_KEY
 ```
 
-#### Agent 2: 订单簿（4 交易所，自动跳过失败的）
-```bash
-# 全部并行请求，任何一个 403/超时 → 标记"接口受限"，不停
-curl -s "https://api.binance.com/api/v3/ticker/24hr?symbol=CFXUSDT"
-curl -s "https://www.okx.com/api/v5/market/ticker?instId=CFX-USDT"
-curl -s "https://api.gateio.ws/api/v4/spot/tickers?currency_pair=CFX_USDT"
-curl -s "https://api.mexc.com/api/v3/ticker/24hr?symbol=CFXUSDT"
+### Step 1: 创建 Agent Team + 并行派发 7 个 Teammate
+
+**使用 TeamCreate 创建团队，然后用 TaskCreate 创建 7 个任务，最后用 Task 工具并行启动 7 个 Teammate。**
+
+#### 1.1 创建团队
+
+```
+TeamCreate:
+  team_name: "cfx-briefing"
+  description: "CFX 每日投资简报数据采集团队"
 ```
 
-#### Agent 3: 推特舆情（Grok Agent Tools API）
-```bash
-# ⚠️ 必须用新 API: POST https://api.x.ai/v1/responses
-# Model: grok-4-1-fast-reasoning
-# 工具: x_search（每批最多 10 个账号）
-# 分 2 批：
-#   批次1: Conflux_Network, Conflux_Intern, CamillaCaban, CikeinWeb3, SwappiDEX, OfficialNucleon, dForcenet, BitUnion_Card, Joyzinweb3, forgivenever
-#   批次2: estherinweb3, FanLong16, GuangYang_9, AnchorX_Ltd, HexbitApp, bxiaokang
-# 输出: 每个账号的 sentiment (BULLISH/NEUTRAL/SILENT) + 摘要
+#### 1.2 创建 7 个任务
+
+用 TaskCreate 一次性创建以下 7 个任务（全部 pending 状态）：
+
+| Task ID | subject | activeForm |
+|---------|---------|------------|
+| 1 | 获取 CFX 价格数据 | Fetching price data |
+| 2 | 获取 4 交易所盘口数据 | Fetching exchange data |
+| 3 | 获取推特舆情数据 | Fetching Twitter sentiment |
+| 4 | 获取链上数据 | Fetching on-chain data |
+| 5 | 获取治理投票数据 | Fetching governance data |
+| 6 | 获取巨鲸持仓数据 | Fetching whale holdings |
+| 7 | 获取新闻消息面 | Fetching news |
+
+#### 1.3 并行启动 7 个 Teammate
+
+**在一条消息中同时发出 7 个 Task 调用**（不是顺序发，是并行发）：
+
+---
+
+**Teammate 1: price-agent**
+```
+Task:
+  name: "price-agent"
+  subagent_type: "general-purpose"
+  team_name: "cfx-briefing"
+  mode: "bypassPermissions"
+  prompt: |
+    你是 CFX 简报价格数据采集 Agent。
+
+    任务：获取 CFX 当前价格数据，写入 /tmp/cfx-price.json
+
+    步骤：
+    1. curl -s "https://api.coingecko.com/api/v3/coins/conflux-token?localization=false&tickers=false&community_data=false&developer_data=false&sparkline=false"
+    2. 如果 CoinGecko 失败，备用：curl -s "https://coins.llama.fi/prices/current/coingecko:conflux-token"
+    3. 提取并写入 /tmp/cfx-price.json：
+       {
+         "price": 当前价格,
+         "change_24h": 24小时涨跌%,
+         "change_7d": 7天涨跌%,
+         "market_cap": 市值,
+         "volume_24h": 24小时成交量,
+         "circulating_supply": 流通量
+       }
+
+    完成后用 TaskUpdate 将任务标记为 completed，并用 SendMessage 将 JSON 结果发送给 team lead。
 ```
 
-#### Agent 4: 链上数据
-```bash
-# TVL
-curl -s "https://api.llama.fi/v2/chains" | python3 -c "import sys,json; data=json.load(sys.stdin); cfx=[c for c in data if c.get('name')=='Conflux']; print(json.dumps({'tvl': cfx[0]['tvl'] if cfx else 'N/A'}))"
+---
 
-# Core Space 账户
-curl -s "https://api.confluxscan.io/statistics/account/growth?duration=day&intervalType=day"
+**Teammate 2: exchange-agent**
+```
+Task:
+  name: "exchange-agent"
+  subagent_type: "general-purpose"
+  team_name: "cfx-briefing"
+  mode: "bypassPermissions"
+  prompt: |
+    你是 CFX 简报交易所数据采集 Agent。
 
-# eSpace 账户
-curl -s "https://evmapi.confluxscan.io/statistics/account/growth?duration=day&intervalType=day"
+    任务：获取 4 个交易所的 CFX/USDT 行情，写入 /tmp/cfx-exchange.json
 
-# AxCNH（如果脚本存在就跑，不存在就跳过）
-python3 $CFX_PROJECT_DIR/scripts/fetch_axcnh_data.py 2>/dev/null || echo '{"success":false}'
+    并行请求（任何一个失败就标记 "接口受限"，不停）：
+    1. Binance: curl -s "https://api.binance.com/api/v3/ticker/24hr?symbol=CFXUSDT"
+    2. OKX: curl -s "https://www.okx.com/api/v5/market/ticker?instId=CFX-USDT"
+    3. Gate: curl -s "https://api.gateio.ws/api/v4/spot/tickers?currency_pair=CFX_USDT"
+    4. MEXC: curl -s "https://api.mexc.com/api/v3/ticker/24hr?symbol=CFXUSDT"
+
+    每个交易所提取：{ name, price, change_24h, volume, status: "ok"/"接口受限" }
+    写入 /tmp/cfx-exchange.json（数组格式）
+
+    完成后用 TaskUpdate 将任务标记为 completed，并用 SendMessage 将 JSON 结果发送给 team lead。
 ```
 
-#### Agent 5: 治理投票（Chrome DevTools）
+---
+
+**Teammate 3: twitter-agent**
 ```
-mcp__chrome-devtools__navigate_page → https://confluxhub.io/governance/vote/onchain-dao-voting
-mcp__chrome-devtools__take_snapshot
-# 解析: Round 轮次、投票期、4 个参数的当前值/即将生效/投票中
-# 如果页面加载失败 → WebSearch "Conflux governance Round voting 2026" 作为备用
-# 如果都失败 → 返回 "当前无进行中的治理投票"
+Task:
+  name: "twitter-agent"
+  subagent_type: "general-purpose"
+  team_name: "cfx-briefing"
+  mode: "bypassPermissions"
+  prompt: |
+    你是 CFX 简报推特舆情采集 Agent。
+
+    任务：用 Grok Agent Tools API 获取 16 个账号最近 7 天推文，写入 /tmp/cfx-twitter.json
+
+    先读取环境变量：读取 $CFX_PROJECT_DIR/.env 获取 XAI_API_KEY（注意：$CFX_PROJECT_DIR 的值从 ~/.claude/CLAUDE.md 中获取）
+
+    ⚠️ 必须使用新 API（旧 /v1/chat/completions 已弃用）：
+    - Endpoint: POST https://api.x.ai/v1/responses
+    - Model: grok-4-1-fast
+    - 工具: x_search（每批最多 10 个账号，必须分 2 批）
+
+    批次 1（10 个）：
+    curl -s -X POST 'https://api.x.ai/v1/responses' \
+      -H "Authorization: Bearer $XAI_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "model": "grok-4-1-fast",
+        "input": [{"role": "user", "content": "获取以下Twitter账号过去7天的推文动态，对每个账号分析其内容是利好(BULLISH)、中性(NEUTRAL)还是沉默(SILENT，无发言)，给出每个账号的摘要"}],
+        "tools": [{"type": "x_search", "allowed_x_handles": [
+          "Conflux_Network","Conflux_Intern","CamillaCaban","CikeinWeb3",
+          "SwappiDEX","OfficialNucleon","dForcenet","BitUnion_Card",
+          "Joyzinweb3","forgivenever"
+        ]}]
+      }'
+
+    批次 2（6 个）：
+    curl -s -X POST 'https://api.x.ai/v1/responses' \
+      -H "Authorization: Bearer $XAI_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "model": "grok-4-1-fast",
+        "input": [{"role": "user", "content": "获取以下Twitter账号过去7天的推文动态，对每个账号分析其内容是利好(BULLISH)、中性(NEUTRAL)还是沉默(SILENT，无发言)，给出每个账号的摘要"}],
+        "tools": [{"type": "x_search", "allowed_x_handles": [
+          "estherinweb3","FanLong16","GuangYang_9","AnchorX_Ltd","HexbitApp","bxiaokang"
+        ]}]
+      }'
+
+    解析两批响应中的 output[].content[].text，合并为：
+    [{ "account": "@xxx", "sentiment": "BULLISH/NEUTRAL/SILENT", "summary": "摘要" }, ...]
+    写入 /tmp/cfx-twitter.json
+
+    完成后用 TaskUpdate 将任务标记为 completed，并用 SendMessage 将 JSON 结果发送给 team lead。
 ```
 
-#### Agent 6: 巨鲸持仓
+---
+
+**Teammate 4: onchain-agent**
 ```
-WebFetch → https://www.coincarp.com/currencies/confluxtoken/richlist/
-# 提取: Top10/20/50/100 占比、近期大户异动
-# 如果失败 → WebSearch "Conflux CFX whale holdings top holders 2026"
+Task:
+  name: "onchain-agent"
+  subagent_type: "general-purpose"
+  team_name: "cfx-briefing"
+  mode: "bypassPermissions"
+  prompt: |
+    你是 CFX 简报链上数据采集 Agent。
+
+    任务：获取 TVL + 双空间账户数 + AxCNH 供应量，写入 /tmp/cfx-onchain.json
+
+    1. TVL:
+       curl -s "https://api.llama.fi/v2/chains"
+       提取 name=="Conflux" 的 tvl 值
+
+    2. Core Space 账户:
+       curl -s "https://api.confluxscan.io/statistics/account/growth?duration=day&intervalType=day"
+       提取最新总账户数和日增量
+
+    3. eSpace 账户:
+       curl -s "https://evmapi.confluxscan.io/statistics/account/growth?duration=day&intervalType=day"
+       提取最新总账户数和日增量
+
+    4. AxCNH 供应量:
+       WebFetch https://evm.confluxscan.net/token/0x70bfd7f7eadf9b9827541272589a6b2bb760ae2e
+       提取: 总供应量、持有人数、转移次数
+
+    写入 /tmp/cfx-onchain.json：
+    {
+      "tvl": 数值,
+      "core_space": { "total_accounts": X, "daily_new": X },
+      "espace": { "total_accounts": X, "daily_new": X },
+      "axcnh": { "supply": "X", "holders": X, "transfers": X }
+    }
+
+    任何 API 失败 → 对应字段写 null，不停。
+
+    完成后用 TaskUpdate 将任务标记为 completed，并用 SendMessage 将 JSON 结果发送给 team lead。
 ```
 
-#### Agent 7: 新闻消息面
+---
+
+**Teammate 5: governance-agent**
 ```
-WebSearch → "Conflux CFX news February 2026"
-# 提取: 交易所上线、技术升级、合作伙伴、牌照进展
+Task:
+  name: "governance-agent"
+  subagent_type: "general-purpose"
+  team_name: "cfx-briefing"
+  mode: "bypassPermissions"
+  prompt: |
+    你是 CFX 简报治理投票数据采集 Agent。
+
+    任务：获取 ConfluxHub 链上投票数据，写入 /tmp/cfx-governance.json
+
+    方法 1（优先）：Chrome DevTools MCP
+    1. mcp__chrome-devtools__navigate_page → https://confluxhub.io/governance/vote/onchain-dao-voting
+    2. mcp__chrome-devtools__wait_for "Round" (timeout 15000)
+    3. mcp__chrome-devtools__take_snapshot
+    4. 解析快照中的投票数据
+
+    方法 2（备用）：如果方法 1 失败
+    WebSearch "site:confluxhub.io governance vote onchain-dao-voting 2026"
+
+    方法 3（最终备用）：如果方法 1 和 2 都失败
+    返回 { "status": "no_data", "message": "当前无进行中的治理投票" }
+
+    提取数据格式：
+    {
+      "round": 轮次数字,
+      "voting_period": { "start": "日期", "end": "日期" },
+      "effective_date": "日期",
+      "min_votes": 数字,
+      "params": [
+        { "name": "PoW区块奖励", "current": "X CFX/Block", "pending": "X CFX/Block", "voting": "X CFX/Block", "change": "减半/不变/上调" },
+        { "name": "质押利率", "current": "X%", "pending": "X%", "voting": "X%", "change": "..." },
+        { "name": "存储点比例", "current": "X%", "pending": "X%", "voting": "X%", "change": "..." },
+        { "name": "基础费用分享", "current": "X%", "pending": "X%", "voting": "X%", "change": "..." }
+      ]
+    }
+
+    完成后用 TaskUpdate 将任务标记为 completed，并用 SendMessage 将 JSON 结果发送给 team lead。
 ```
 
-### Step 2: 生成 HTML（一次性写入）
+---
 
-**所有 Agent 返回后，立即组装 HTML，不展示中间数据等确认。**
+**Teammate 6: whale-agent**
+```
+Task:
+  name: "whale-agent"
+  subagent_type: "general-purpose"
+  team_name: "cfx-briefing"
+  mode: "bypassPermissions"
+  prompt: |
+    你是 CFX 简报巨鲸持仓数据采集 Agent。
 
-缺失数据处理（自动，不问）：
-- API 失败的交易所 → 表格中标注 `<span class="tag tag-red">接口受限</span>`
-- 推特账号无发言 → 归入"沉默"分类
-- AxCNH 数据失败 → 显示 `⚠️ 数据暂不可用`
-- 治理投票无数据 → 显示 `✅ 当前无进行中的治理投票`
+    任务：获取 CFX 持仓分布和大户动向，写入 /tmp/cfx-whale.json
 
-```bash
-Write → $CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html
+    1. WebFetch https://www.coincarp.com/currencies/confluxtoken/richlist/
+       提取: Top10/20/50/100 占比
+
+    2. 如果 CoinCarp 失败 → WebSearch "Conflux CFX whale holdings top holders 2026"
+
+    3. 特别关注已识别地址：
+       - 0xe2fc31f816a9b94326492132018c3aecc4a93ae1 (Binance提币钱包 #22)
+         减持 = 用户提币到自托管（看涨信号）
+       - 0x83da47ab9d850e2352edc200f172dbab39f66d84 (冷存储积累者 #27)
+         纯积累零卖出，增持 = 聪明钱看好
+
+    写入 /tmp/cfx-whale.json：
+    {
+      "distribution": { "top10": "X%", "top20": "X%", "top50": "X%", "top100": "X%" },
+      "tracked_addresses": [
+        { "address": "0xe2fc...", "label": "Binance提币钱包", "change_7d": "描述", "signal": "看涨/看跌/中性" },
+        { "address": "0x83da...", "label": "冷存储积累者", "change_7d": "描述", "signal": "看涨/看跌/中性" }
+      ]
+    }
+
+    完成后用 TaskUpdate 将任务标记为 completed，并用 SendMessage 将 JSON 结果发送给 team lead。
 ```
 
-### Step 3: 打开简报
+---
+
+**Teammate 7: news-agent**
+```
+Task:
+  name: "news-agent"
+  subagent_type: "general-purpose"
+  team_name: "cfx-briefing"
+  mode: "bypassPermissions"
+  prompt: |
+    你是 CFX 简报新闻消息面采集 Agent。
+
+    任务：搜索 Conflux/CFX 最新新闻，写入 /tmp/cfx-news.json
+
+    1. WebSearch "Conflux CFX news {当前月份} {当前年份}"
+    2. WebSearch "Conflux Network announcement {当前月份} {当前年份}"
+    3. WebSearch "CFX token listing partnership {当前年份}"
+
+    分类提取：
+    - 交易所上线
+    - 技术升级
+    - 合作伙伴
+    - 牌照进展（尤其香港稳定币牌照）
+    - 生态活动
+
+    写入 /tmp/cfx-news.json：
+    [{ "category": "分类", "title": "标题", "summary": "摘要", "date": "日期", "source": "来源" }, ...]
+
+    完成后用 TaskUpdate 将任务标记为 completed，并用 SendMessage 将 JSON 结果发送给 team lead。
+```
+
+### Step 2: 汇总 + 生成 HTML
+
+**所有 7 个 Teammate 完成后（通过 TaskList 确认全部 completed），Team Lead 立即执行：**
+
+1. 读取 7 个 `/tmp/cfx-*.json` 文件
+2. 用 Python 或直接在内存中组装完整的 HTML 简报
+3. Write → `$CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html`
+
+**缺失数据自动处理（不问）：**
+- API 失败的交易所 → `<span class="tag tag-red">接口受限</span>`
+- 推特账号无发言 → 归入 SILENT 分类
+- AxCNH 数据失败 → `⚠️ 数据暂不可用`
+- 治理投票无数据 → `✅ 当前无进行中的治理投票`
+
+### Step 3: 打开 + 清理团队
 
 ```bash
 open $CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html
 ```
 
-**Step 2 和 Step 3 之间不暂停，写完直接打开。**
+然后依次：
+1. 向所有 Teammate 发送 `shutdown_request`
+2. 等待所有 Teammate 确认 shutdown
+3. `TeamDelete` 清理团队资源
+
+**Step 2 → Step 3 之间不暂停。**
+
+---
 
 ## HTML 9 章节
 
 1. **价格概览**: 当前价、成本 $0.26、浮亏%、回本涨幅%、24H/7D 涨跌
 2. **交易所盘口**: 4 交易所价格+涨跌+成交量（失败的标注"接口受限"）
 3. **治理投票**: Round 轮次、参数变更、投票进度、影响分析
-4. **巨鲸持仓**: Top10/20/50/100 占比 + 大户异动
+4. **巨鲸持仓**: Top10/20/50/100 占比 + 大户异动 + 已识别地址标注
 5. **链上数据**: TVL、Core/eSpace 账户数、AxCNH
 6. **推特舆情**: BULLISH/NEUTRAL/SILENT 三栏 + 每账号摘要
 7. **重大新闻**: 交易所上线、技术升级、合作、牌照
 8. **综合评估**: 利好因素 / 风险因素 / 操作建议 三栏
-9. **数据来源**: 列出所有 API 来源
+9. **数据来源**: 列出所有 API 来源 + Agent 执行状态
 
 ## 计算公式
 
@@ -171,10 +393,9 @@ open $CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html
 - ❌ 跳过任何章节
 - ❌ 用占位符
 - ❌ 使用旧 Grok API（`/v1/chat/completions` 已弃用，必须用 `/v1/responses`）
+- ❌ 顺序启动 Agent（必须在一条消息中并行启动全部 7 个）
 
 ## 重点监控地址（2026-02-13更新）
-
-生成简报时，Agent 6（巨鲸持仓）应特别关注以下已识别地址的变动：
 
 ### 地址 1: Binance Withdrawals 7（交易所提币热钱包）
 
@@ -183,17 +404,7 @@ open $CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html
 | **地址** | `0xe2fc31f816a9b94326492132018c3aecc4a93ae1` |
 | **身份** | Binance: Withdrawals 7（官方提币热钱包） |
 | **CoinCarp排名** | #22 |
-| **标签来源** | Etherscan 官方标签 |
-| **多链资产** | $191M（跨9条链） |
-| **BSC资产** | $3.87M BNB + $12.15M 代币 |
-| **BSC交易数** | 45.5M 笔 |
-| **资金来源** | Binance 51（内部调拨） |
-| **BSC持有bCFX** | 7,057,649 bCFX（$362,571） |
-
-**分析要点**：
-- 该地址的CFX减持 ≠ 鲸鱼抛售，而是用户从Binance提币（看涨信号）
-- 大量提币说明用户将CFX转入自托管钱包，减少交易所抛压
-- 监控此地址的7日变化可判断Binance用户的提币/充值趋势
+| **解读** | 减持 = 用户提币到自托管（看涨信号） |
 
 ### 地址 2: cryptomoonwalker.bnb（冷存储积累者）
 
@@ -202,21 +413,11 @@ open $CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html
 | **地址** | `0x83da47ab9d850e2352edc200f172dbab39f66d84` |
 | **身份** | cryptomoonwalker.bnb 控制的冷存储钱包 |
 | **CoinCarp排名** | #27 |
-| **行为特征** | 纯积累，零卖出 |
-| **BSC持仓** | 2021-2022年购入的多种代币（SHIB、DOGE等） |
-| **Conflux持仓** | 新近积累，持续增持CFX |
-| **资金流向** | 单向：cryptomoonwalker.bnb → 此地址 |
-
-**分析要点**：
-- 典型的长期持有者行为，所有资金只进不出
-- BSC上的持仓模式显示该用户偏好在低位积累并长期持有
-- 持续增持CFX说明对项目有长期信心
-- 监控此地址的增持速度可判断聪明钱的态度
+| **解读** | 纯积累零卖出，增持 = 聪明钱看好 |
 
 ### 简报输出要求
 
-在巨鲸持仓章节中，如果上述地址出现在7日变动排行中，应特别标注：
-
+在巨鲸持仓章节中标注：
 ```
 📌 已识别地址异动：
 - 0xe2fc...93ae1 (Binance提币钱包): [变动量] → [看涨/看跌解读]
@@ -227,4 +428,3 @@ open $CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html
 
 - 成本: $0.26
 - 止盈: $0.15-0.18 卖 30%，$0.22-0.26 卖 40%，$0.30+ 卖剩余
-
