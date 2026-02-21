@@ -1,134 +1,168 @@
 ---
 name: evmbench
-description: Smart contract security audit using EVMbench (OpenAI + Paradigm). Use when user wants to audit Solidity contracts, detect vulnerabilities, patch issues, or run the EVMbench benchmark. Triggers on keywords like "audit contract", "smart contract vulnerability", "evmbench", "solidity security".
-allowed-tools: Bash, Read, Glob, WebFetch
+description: Fully automated smart contract security audit. Give a file path or directory → automatically reads all Solidity contracts, runs EVMbench-style vulnerability detection, generates patch suggestions, and outputs a structured security report. No manual steps required. Triggers on "audit contract", "smart contract vulnerability", "evmbench", "solidity security", "check my contract".
+allowed-tools: Bash, Read, Glob, Write, Edit
 ---
 
-# EVMbench Smart Contract Security Skill
+# EVMbench Automated Smart Contract Audit
 
-EVMbench is an open benchmark by OpenAI + Paradigm that evaluates AI agents on detecting, patching, and exploiting smart contract vulnerabilities.
-
-## Quick Start
-
-Ask the user which mode they need:
-
-1. **Web Audit** - Upload contracts to web UI, get instant vulnerability report
-2. **Local Benchmark** - Run full detect/patch/exploit evaluation locally
-3. **Interpret Results** - Help understand existing EVMbench output
+**Zero manual steps.** User provides a path → full audit runs automatically.
 
 ---
 
-## Mode 1: Web Audit (Fastest)
+## Step 1: Resolve Target
 
-**URL**: https://paradigm.xyz/evmbench
+Extract the path from user input. If not provided, ask once:
+> "Please provide the path to your contract file or directory."
 
-Steps:
-1. Zip the contract folder or prepare individual `.sol` files
-2. Open https://paradigm.xyz/evmbench
-3. Drag & drop the folder/zip
-4. Select model (default: `codex-gpt-5.2`)
-5. Agree to Terms and click **Start analysis**
-6. Review high-severity findings
-
-**Output**: List of high-severity vulnerabilities with descriptions.
-
----
-
-## Mode 2: Local Setup
-
-### Prerequisites
 ```bash
-# Check requirements
-node --version   # Node.js 18+
-git --version
-cargo --version  # Rust (for the harness)
-```
+# If directory: find all Solidity files
+find <path> -name "*.sol" -not -path "*/node_modules/*" -not -path "*/lib/*" -not -path "*/test/*"
 
-### Install
-```bash
-git clone https://github.com/paradigmxyz/evmbench
-cd evmbench
-```
-
-Read the repo README for exact setup:
-```bash
-cat README.md
-```
-
-### Run Detect Mode
-```bash
-# Detect vulnerabilities in a contract
-# (follow repo instructions for exact CLI)
-```
-
-### Run Exploit Mode (Sandboxed)
-- Runs on local Anvil instance (NOT mainnet)
-- Requires Foundry/Anvil installed:
-```bash
-curl -L https://foundry.paradigm.xyz | bash
-foundryup
+# If single file: use directly
 ```
 
 ---
 
-## Mode 3: Interpret Results
+## Step 2: Read All Contracts
 
-When user shares EVMbench output, help them understand:
-
-### Detect Results
-- **Recall score**: % of ground-truth vulnerabilities found
-- **False positives**: Issues flagged that aren't real vulnerabilities
-- **Missed vulnerabilities**: What the agent failed to catch
-
-### Patch Results
-- **Success**: Vulnerability removed AND all tests still pass
-- **Failure modes**:
-  - Broke existing functionality
-  - Vulnerability still exploitable after patch
-  - Compilation error introduced
-
-### Exploit Results
-- **Score**: % of fund-draining attacks successfully executed
-- Each task = deploy contract → execute exploit → verify funds moved
+Read every `.sol` file found. For each file, note:
+- Contract name(s)
+- Solidity version pragma
+- Imports and dependencies
+- Key functions (especially payable, external, public)
 
 ---
 
-## Common Vulnerability Types in EVMbench
+## Step 3: Automated Vulnerability Detection (Detect Mode)
 
-| Type | Description | Example |
-|------|-------------|---------|
-| Reentrancy | External call before state update | Classic DAO hack pattern |
-| Access Control | Missing `onlyOwner` or role checks | Anyone can call admin functions |
-| Integer Overflow | Unchecked arithmetic | Pre-Solidity 0.8 math bugs |
-| Flash Loan Attack | Price manipulation via flash loans | Oracle manipulation |
-| Logic Error | Business logic flaw | Wrong calculation in reward distribution |
+Analyze each contract systematically for ALL of the following vulnerability classes:
+
+### Critical (Fund-draining risk)
+| ID | Vulnerability | Detection Pattern |
+|----|--------------|-------------------|
+| C1 | **Reentrancy** | External call (`call`, `transfer`, `send`) before state update; missing reentrancy guard |
+| C2 | **Access Control** | Missing `onlyOwner`/role check on privileged functions (`withdraw`, `mint`, `pause`, `upgrade`) |
+| C3 | **Flash Loan / Price Oracle Manipulation** | Spot price used as oracle; no TWAP; single-block price dependency |
+| C4 | **Unchecked Return Values** | `.call()` return value not checked; low-level calls without revert |
+| C5 | **Integer Overflow/Underflow** | `unchecked` blocks with arithmetic; pre-0.8 without SafeMath |
+| C6 | **Arbitrary External Call** | User-controlled `target` address in `.call()` |
+| C7 | **Delegatecall to Untrusted Contract** | `delegatecall` with user-supplied address |
+| C8 | **Selfdestruct** | Unprotected `selfdestruct` |
+
+### High
+| ID | Vulnerability | Detection Pattern |
+|----|--------------|-------------------|
+| H1 | **tx.origin Authentication** | `require(tx.origin == owner)` |
+| H2 | **Timestamp Dependence** | `block.timestamp` used for randomness or critical logic |
+| H3 | **Front-running** | Commit-reveal missing; predictable state transitions |
+| H4 | **Signature Replay** | Missing nonce or chainId in signed messages |
+| H5 | **Uninitialized Proxy** | Implementation contract not initialized; `initialize()` callable by anyone |
+| H6 | **Storage Collision** | Proxy + implementation storage layout mismatch |
+| H7 | **ERC20 Approval Race** | `approve()` without `increaseAllowance` pattern |
+
+### Medium
+| ID | Vulnerability | Detection Pattern |
+|----|--------------|-------------------|
+| M1 | **Denial of Service** | Unbounded loop; push-over-pull pattern missing |
+| M2 | **Centralization Risk** | Single EOA controls critical functions |
+| M3 | **Missing Event Emissions** | State-changing functions without events |
+| M4 | **Incorrect ERC Standard** | Missing return values; wrong interface implementation |
+| M5 | **Block Gas Limit** | Loop over dynamic array that can grow unbounded |
 
 ---
 
-## Analyzing a Contract Locally (Without EVMbench)
+## Step 4: Generate Findings Report
 
-If user has a `.sol` file and wants a quick review:
+For each vulnerability found, output:
 
-```bash
-# Read the contract
-cat contracts/MyContract.sol
+```
+## [SEVERITY] [ID] - [Vulnerability Name]
+
+**File**: contracts/MyContract.sol
+**Line**: 42-58
+**Function**: `withdraw()`
+
+**Description**:
+[Explain what the vulnerability is and why it's dangerous]
+
+**Vulnerable Code**:
+```solidity
+// paste the vulnerable snippet
 ```
 
-Then analyze for:
-1. External calls before state changes (reentrancy)
-2. Missing access modifiers
-3. Unchecked return values
-4. Arithmetic without SafeMath (pre-0.8) or unchecked blocks
-5. tx.origin usage
-6. Timestamp dependence
-7. Delegatecall to untrusted contracts
+**Impact**:
+[What an attacker can do - e.g., "drain all ETH from the contract"]
+
+**Proof of Concept**:
+[Describe the attack steps in plain language]
+```
 
 ---
 
-## Resources
+## Step 5: Automated Patch Suggestions (Patch Mode)
 
-- Web UI: https://paradigm.xyz/evmbench
-- GitHub: https://github.com/paradigmxyz/evmbench
-- Paper: https://cdn.openai.com/evmbench/evmbench.pdf
-- OpenAI blog: https://openai.com/index/introducing-evmbench/
-- Paradigm blog: https://www.paradigm.xyz/2026/02/evmbench
+For each Critical and High finding, generate a concrete fix:
+
+```
+## Patch for [ID] - [Vulnerability Name]
+
+**Fix**:
+```solidity
+// Show the corrected code
+```
+
+**Explanation**:
+[Why this fix works]
+
+**Verification**:
+[How to confirm the fix is correct - what test to write]
+```
+
+Apply patches only if user explicitly asks: "apply the patches" or "fix the vulnerabilities".
+
+---
+
+## Step 6: Final Security Report
+
+Output a complete report:
+
+```markdown
+# Smart Contract Security Audit Report
+**Date**: [today]
+**Target**: [path]
+**Files Analyzed**: [N] contracts
+
+## Executive Summary
+- Critical: [N]
+- High: [N]
+- Medium: [N]
+- Total Issues: [N]
+
+## Risk Score: [CRITICAL / HIGH / MEDIUM / LOW]
+
+## Findings
+[All findings from Step 4]
+
+## Patches
+[All patches from Step 5]
+
+## Recommendations
+1. [Top priority action]
+2. [Second priority]
+3. [Third priority]
+
+## Files Audited
+- [list of .sol files]
+```
+
+---
+
+## Execution Rules
+
+- **Never ask the user for anything** after receiving the path - run the full audit automatically
+- Read ALL `.sol` files before starting analysis (don't analyze one at a time)
+- If a file imports others, read those too for full context
+- Flag false positives explicitly: "This pattern looks like X but is safe because Y"
+- If no vulnerabilities found, say so clearly with confidence level
+- Always complete Detect → Patch → Report in one pass
