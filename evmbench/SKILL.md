@@ -15,9 +15,31 @@ allowed-tools: Bash, Read, Glob, Write, Edit
 Extract the path from user input. If not provided, ask once:
 > "Please provide the path to your contract file or directory."
 
+Supported input types:
+- **Directory path** - scans recursively
+- **Single file** - any supported extension
+- **GitHub URL** - clone first, then scan
+- **Zip file** - extract first, then scan
+
+Supported smart contract languages:
+| Extension | Language | Notes |
+|-----------|----------|-------|
+| `.sol` | Solidity | Most common EVM language |
+| `.vy` | Vyper | Python-like, common in DeFi |
+| `.yul` | Yul | EVM intermediate language |
+| `.huff` | Huff | Low-level EVM assembly |
+| `.fe` | Fe | Rust-like EVM language |
+
 ```bash
-# If directory: find all Solidity files
-find <path> -name "*.sol" -not -path "*/node_modules/*" -not -path "*/lib/*" -not -path "*/test/*"
+# If directory: find all contract files (all supported languages)
+find <path> \( -name "*.sol" -o -name "*.vy" -o -name "*.yul" -o -name "*.huff" -o -name "*.fe" \) \
+  -not -path "*/node_modules/*" \
+  -not -path "*/lib/*" \
+  -not -path "*/test/*" \
+  -not -path "*/.git/*"
+
+# If GitHub URL:
+git clone <url> /tmp/evmbench-target && find /tmp/evmbench-target ...
 
 # If single file: use directly
 ```
@@ -26,7 +48,7 @@ find <path> -name "*.sol" -not -path "*/node_modules/*" -not -path "*/lib/*" -no
 
 ## Step 2: Read All Contracts
 
-Read every `.sol` file found. For each file, note:
+Read every contract file found. For each file, note:
 - Contract name(s)
 - Solidity version pragma
 - Imports and dependencies
@@ -35,6 +57,12 @@ Read every `.sol` file found. For each file, note:
 ---
 
 ## Step 3: Automated Vulnerability Detection (Detect Mode)
+
+Detect language first, then apply language-specific + universal checks:
+- **Solidity**: full checklist below
+- **Vyper**: focus on reentrancy (no modifier support), integer issues, storage layout, `raw_call` misuse
+- **Yul**: focus on memory safety, calldata handling, return value checks
+- **Huff**: focus on stack underflow/overflow, missing revert paths
 
 Analyze each contract systematically for ALL of the following vulnerability classes:
 
