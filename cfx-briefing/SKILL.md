@@ -1,6 +1,11 @@
 ---
 name: cfx-briefing
-description: CFX投资简报生成器。输入"CFX"或"CFX --api"生成HTML简报。必须使用Agent Teams并行执行。
+description: >
+  Conflux (CFX) 投资简报生成器，自动聚合价格、订单簿、推特舆情、链上数据、
+  治理投票、巨鲸持仓、新闻消息等9个维度，输出专业HTML报告。
+  触发词：CFX、cfx、生成CFX简报、Conflux简报、CFX行情、CFX投资分析、
+  CFX --api、CFX --md、今日CFX、CFX市场分析。
+  不触发：讨论CFX代码实现、Conflux开发文档、CFX技术架构问题。
 base_dir_key: cfx-briefing
 ---
 
@@ -282,4 +287,122 @@ TeamDelete()  # 清理团队资源
 
 - 成本: $0.26
 - 止盈: $0.15-0.18 卖 30%，$0.22-0.26 卖 40%，$0.30+ 卖剩余
+
+## Evals（质量评估测试）
+
+> 基于 Anthropic skill-creator 博客的最佳实践，定义可验证的测试用例。
+> 运行方式：执行 `CFX` 后，按以下清单逐项检查。
+
+### Eval 1: HTML 结构完整性
+
+| 检查项 | 预期 | 判定 |
+|--------|------|------|
+| HTML 文件成功生成 | `$CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html` 存在 | ✅/❌ |
+| 包含 9 个章节 | 价格/订单簿/治理/巨鲸/链上/推特/新闻/综合评估/数据来源 | ✅/❌ |
+| 浮亏%计算正确 | `(price - 0.26) / 0.26 * 100` | ✅/❌ |
+| 回本涨幅%计算正确 | `(0.26 - price) / price * 100` | ✅/❌ |
+| 自动打开浏览器 | HTML 在默认浏览器中展示 | ✅/❌ |
+
+### Eval 2: 并行架构合规性
+
+| 检查项 | 预期 | 判定 |
+|--------|------|------|
+| TeamCreate 被调用 | 团队名包含日期 | ✅/❌ |
+| 7 个 Agent 同时启动 | 在同一个 tool call 中派发 | ✅/❌ |
+| 主进程未直接 curl | 所有数据由子 Agent 获取 | ✅/❌ |
+| TeamDelete 执行 | 团队资源已清理 | ✅/❌ |
+
+### Eval 3: API 容错降级
+
+| 场景 | 预期行为 | 判定 |
+|------|----------|------|
+| CoinGecko 403 | 自动切换 DefiLlama 备用源 | ✅/❌ |
+| OKX API 超时 | 订单簿章节标注"接口受限"，不中断 | ✅/❌ |
+| Grok API 失败 | 推特舆情章节标注"⚠️ 获取超时" | ✅/❌ |
+| 治理页面加载失败 | 显示"当前无进行中的治理投票" | ✅/❌ |
+| 巨鲸数据获取失败 | WebSearch 备用方案自动执行 | ✅/❌ |
+
+### Eval 4: 零确认执行
+
+| 检查项 | 预期 | 判定 |
+|--------|------|------|
+| 全程无"是否继续"提问 | 从触发到完成零交互 | ✅/❌ |
+| 无中间数据展示等确认 | 数据直接进入 HTML 生成 | ✅/❌ |
+| API 失败自动降级 | 不询问备用方案 | ✅/❌ |
+
+### Eval 5: 触发准确性
+
+| 输入 | 应触发 | 不应触发 |
+|------|--------|----------|
+| `CFX` | ✅ | |
+| `cfx` | ✅ | |
+| `生成CFX简报` | ✅ | |
+| `Conflux简报` | ✅ | |
+| `CFX行情` | ✅ | |
+| `CFX --api` | ✅ | |
+| `CFX --md` | ✅ | |
+| `今日CFX` | ✅ | |
+| `CFX市场分析` | ✅ | |
+| `Conflux的技术架构是什么` | | ✅ |
+| `帮我写一个CFX的智能合约` | | ✅ |
+| `CFX代码有bug` | | ✅ |
+
+## Benchmark（性能基准追踪）
+
+> 每次运行后记录到 `$CFX_PROJECT_DIR/benchmarks/YYYY-MM-DD.json`
+
+### 追踪指标
+
+```json
+{
+  "date": "YYYY-MM-DD",
+  "total_time_seconds": 0,
+  "agent_times": {
+    "agent-1-price": 0,
+    "agent-2-orderbook": 0,
+    "agent-3-twitter": 0,
+    "agent-4-onchain": 0,
+    "agent-5-governance": 0,
+    "agent-6-whale": 0,
+    "agent-7-news": 0
+  },
+  "api_success_rate": {
+    "coingecko": true,
+    "binance": true,
+    "okx": true,
+    "gate": true,
+    "mexc": true,
+    "grok": true,
+    "confluxscan_core": true,
+    "confluxscan_espace": true,
+    "defillama": true,
+    "coincarp": true
+  },
+  "html_sections_complete": 9,
+  "eval_pass_rate": "5/5"
+}
+```
+
+### 性能目标
+
+| 指标 | 目标 | 告警阈值 |
+|------|------|----------|
+| 总执行时间 | < 180s | > 300s |
+| 并行效率 | 7 Agent 同时启动 | 串行降级 |
+| API 成功率 | ≥ 70%（7/10 源） | < 50% |
+| HTML 章节完整率 | 9/9 | < 7/9 |
+
+### Benchmark 执行（可选）
+
+在 SKILL 执行完成后，自动在 `$CFX_PROJECT_DIR/benchmarks/` 写入当次 JSON 记录。
+不阻塞主流程，如果目录不存在则自动创建。
+
+## Skill 类型声明
+
+> 参考 Anthropic 博客的 skill 分类框架
+
+**类型**: Encoded Preference（流程编码型）
+- 本 skill 编码了特定的投资分析工作流（7 数据源 → 9 章节 HTML）
+- 模型能力提升不会使本 skill 过时，因为核心价值在于特定的数据源组合和分析框架
+- 需要定期验证：API 端点变更、推特账号变动、生态项目更新
 
