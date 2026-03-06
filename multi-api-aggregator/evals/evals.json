@@ -1,0 +1,17 @@
+{
+  "skill_name": "multi-api-aggregator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Call CoinGecko and Binance APIs in parallel to get Bitcoin price - aggregate the results",
+      "expected_output": "应该并行调用两个 API,返回聚合后的价格数据,包含成功率和响应时间",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "我需要从 3 个交易所获取 CFX 价格:CoinGecko (conflux-token), Binance (CFXUSDT), OKX (CFX-USDT),自动处理失败和重试",
+      "expected_output": "应该调用 3 个 API,自动重试失败的请求,返回成功的结果和失败的错误信息",
+      "files": []
+    }
+  ]
+}

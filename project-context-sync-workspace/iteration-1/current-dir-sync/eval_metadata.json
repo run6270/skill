@@ -1,0 +1,6 @@
+{
+  "eval_id": 2,
+  "eval_name": "current-dir-sync",
+  "prompt": "sync project context for the current directory",
+  "assertions": []
+}

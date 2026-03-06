@@ -1,0 +1,23 @@
+{
+  "skill_name": "project-context-sync",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "我刚切换到 /Users/mac/Documents/GitHub/CFX-DWF行情 这个项目,帮我分析一下这是什么项目,用了什么技术栈",
+      "expected_output": "应该检测到这是一个 CFX 投资简报生成器项目,分析其技术栈(可能包含 Python/Node.js 等),并生成 CLAUDE.md 和分析报告",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "sync project context for the current directory",
+      "expected_output": "应该分析当前目录(githubrepo),检测到小红书内容工厂项目,更新 CLAUDE.md 并生成详细报告",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "这个项目有哪些依赖?需要配置什么环境变量?",
+      "expected_output": "应该扫描 package.json/requirements.txt 等文件,列出所有依赖,并从 .env.example 中提取环境变量要求",
+      "files": []
+    }
+  ]
+}

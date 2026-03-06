@@ -1,0 +1,6 @@
+{
+  "eval_id": 3,
+  "eval_name": "dependencies-check",
+  "prompt": "这个项目有哪些依赖?需要配置什么环境变量?",
+  "assertions": []
+}
