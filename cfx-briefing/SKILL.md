@@ -1,11 +1,16 @@
 ---
 name: cfx-briefing
 description: >
-  Conflux (CFX) 投资简报生成器，自动聚合价格、订单簿、推特舆情、链上数据、
-  治理投票、巨鲸持仓、新闻消息等9个维度，输出专业HTML报告。
-  触发词：CFX、cfx、生成CFX简报、Conflux简报、CFX行情、CFX投资分析、
-  CFX --api、CFX --md、今日CFX、CFX市场分析。
-  不触发：讨论CFX代码实现、Conflux开发文档、CFX技术架构问题。
+  Use this skill when the user wants to generate a CFX/Conflux investment briefing or report.
+  Trigger whenever the user asks for any kind of CFX or Conflux 投资分析、行情分析、投资简报、
+  市场分析、投资报告, or requests a report covering multiple data dimensions like 价格、链上数据、
+  推特舆情、巨鲸持仓、交易所数据. Also trigger on the bare input "CFX" or "cfx" alone — this is
+  the shortcut command. Also trigger on "CFX --api" or "CFX --md" commands. The skill runs a
+  multi-agent pipeline that pulls live data from 9+ sources and outputs a professional HTML briefing.
+  Essentially: if the user wants a comprehensive, multi-source research report about CFX/Conflux
+  for investment decisions, use this skill. Do NOT use for: single-dimension questions like price
+  checks, trading pairs, K-line technical analysis, Conflux development/coding questions, or
+  blockchain architecture discussions.
 base_dir_key: cfx-briefing
 ---
 
@@ -29,6 +34,16 @@ base_dir_key: cfx-briefing
    ```
    - cfx-briefing skill 的项目目录在：<当前工作目录>
    ```
+
+**Git 上下文热身（每次执行必做）：**
+
+在进入执行流程前，运行以下命令加载项目最近状态：
+
+```bash
+cd $CFX_PROJECT_DIR && git log --oneline -10 && git status --short
+```
+
+这一步让 Agent 立刻了解：上次做了什么、有哪些未提交的文件、当前项目状态。
 
 **路径引用规则：**
 - 脚本路径：`$CFX_PROJECT_DIR/scripts/fetch_orderbook.py`
@@ -188,9 +203,64 @@ TaskOutput(task_id="agent-7-news-的task_id", block=true, timeout=120000)
 - 治理投票无数据 → 显示 `✅ 当前无进行中的治理投票`
 - Agent 超时 → 使用已有数据，超时章节标注 `⚠️ 获取超时`
 
+**⚠️ HTML 文件写入规则（强制）：**
+
+HTML 简报通常 300-400 行，超过 Write 工具的 content size 限制。**必须使用 Bash `cat` heredoc 分段写入**：
+
 ```bash
-Write → $CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html
+# 第1段：HTML head + CSS + 第1-2章（价格+订单簿）
+cat > $CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html << 'HTMLPART1'
+<!DOCTYPE html>...第1-2章内容...
+HTMLPART1
+
+# 第2段：第3-4章（治理+巨鲸）
+cat >> $CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html << 'HTMLPART2'
+...第3-4章内容...
+HTMLPART2
+
+# 第3段：第5-6章（链上+推特）
+cat >> $CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html << 'HTMLPART3'
+...第5-6章内容...
+HTMLPART3
+
+# 第4段：第7章（新闻）
+cat >> $CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html << 'HTMLPART4'
+...第7章内容...
+HTMLPART4
+
+# 第5段：第8-9章（综合评估+数据来源+footer）
+cat >> $CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html << 'HTMLPART5'
+...第8-9章+</body></html>...
+HTMLPART5
 ```
+
+**关键规则：**
+- ❌ 禁止使用 `Write` 工具写入 HTML（会因 content size 限制失败）
+- ✅ 必须用 `Bash` + `cat` heredoc 分 5 段写入（`>` 创建 + `>>` 追加）
+- ✅ 每段控制在 80 行以内，避免单次 Bash 输入过大
+- ✅ 5 段 Bash 调用可以顺序执行（有依赖关系，不能并行）
+
+### Step 2.5: 质量评估（可选，首次生成跳过）
+
+**如果用户明确要求高质量输出，执行评估-改进循环（最多 2 轮）：**
+
+```bash
+cd $CFX_PROJECT_DIR && npm run test:evaluator
+```
+
+评估器会返回 4 个维度的评分：
+- accuracy（准确性）≥ 8 分
+- depth（深度）≥ 6 分
+- clarity（清晰度）≥ 6 分
+- completeness（完整性）≥ 5 分
+
+**如果未通过（任一维度低于阈值）：**
+1. 读取评估反馈
+2. 针对性改进（补充缺失数据、深化分析、优化表达）
+3. 重新生成 HTML
+4. 再次评估（最多 2 轮）
+
+**如果通过或达到最大轮次：** 进入 Step 3
 
 ### Step 3: 打开简报 + 清理团队
 
@@ -202,7 +272,7 @@ open $CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html
 TeamDelete()  # 清理团队资源
 ```
 
-**Step 2 和 Step 3 之间不暂停，写完直接打开，打开后清理团队。**
+**Step 2/2.5 和 Step 3 之间不暂停，写完/评估完直接打开，打开后清理团队。**
 
 ## HTML 9 章节
 
