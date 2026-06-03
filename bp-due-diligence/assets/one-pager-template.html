@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <title>{{title}}</title>
+  <style>
+    @page{size:A4;margin:0}
+    *{box-sizing:border-box}
+    body{margin:0;background:#f5f4ed;color:#213047;font-family:"PingFang SC","Noto Serif CJK SC",serif}
+    .page{width:210mm;height:297mm;padding:10mm 11mm 8mm;background:#f5f4ed;overflow:hidden}
+    .top{display:flex;justify-content:space-between;gap:8mm;border-bottom:1px solid #b8ab8a;padding-bottom:4mm}
+    h1{margin:0;color:#1b365d;font-size:21pt;line-height:1.05;letter-spacing:0}
+    .sub{margin-top:2mm;font-size:8.5pt;color:#5b6470}
+    .badge{align-self:flex-start;border:1px solid #8a4b16;background:#fffaf0;color:#8a4b16;padding:2mm 3mm;border-radius:4px;font-size:9pt;white-space:nowrap}
+    .thesis{margin:4mm 0;padding:3mm 4mm;border-left:4px solid #1b365d;background:#fffdf6;font-size:10.4pt;line-height:1.35}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:3.2mm}
+    .card{background:#fffdf8;border:1px solid #d9cfb8;border-radius:5px;padding:3mm;min-height:0}
+    h2{margin:0 0 1.8mm;color:#1b365d;font-size:11.2pt;line-height:1.1}
+    ul{margin:0;padding-left:4.2mm}
+    li{font-size:8.2pt;line-height:1.3;margin:0 0 .9mm}
+    .full{grid-column:1 / -1}
+    .footer{margin-top:3mm;border-top:1px solid #d9cfb8;padding-top:2mm;font-size:7.5pt;color:#69717b;display:flex;justify-content:space-between;gap:3mm}
+  </style>
+</head>
+<body>
+  <section class="page">
+    <div class="top">
+      <div>
+        <h1>{{headline}}</h1>
+        <div class="sub">{{subtitle}}</div>
+      </div>
+      <div class="badge">{{recommendation}}</div>
+    </div>
+    <div class="thesis">{{thesis}}</div>
+    <div class="grid">
+      <div class="card"><h2>已验证事实</h2><ul>{{verified_facts}}</ul></div>
+      <div class="card"><h2>团队与技术</h2><ul>{{team_tech}}</ul></div>
+      <div class="card"><h2>产品实测</h2><ul>{{product_test}}</ul></div>
+      <div class="card"><h2>主要疑点</h2><ul>{{red_flags}}</ul></div>
+      <div class="card"><h2>竞品压力</h2><ul>{{competitors}}</ul></div>
+      <div class="card"><h2>评审追问</h2><ul>{{questions}}</ul></div>
+      <div class="card full"><h2>一句话给评审会</h2><ul>{{committee_line}}</ul></div>
+    </div>
+    <div class="footer">
+      <span>{{sources}}</span>
+      <span>{{full_report_path}}</span>
+    </div>
+  </section>
+</body>
+</html>

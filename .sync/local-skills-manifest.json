@@ -1,0 +1,2119 @@
+{
+  "copied": [
+    {
+      "name": "FirstPrinciples",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "THEALGORITHM",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "aa-trackio-experiment-tracking",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "agent-world",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "ai-news-radar",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "ai-slop-cleaner",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "alphaxiv-paper-lookup",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "analysis-artifacts",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "analyze",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "api-doc-generator",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "artifacts-builder",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "ask",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "atypica-user-interview",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "autopilot",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "autoresearch",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "autoresearch-goal",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "baoyu-diagram",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "baoyu-image-cards",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "baoyu-imagine",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "baoyu-post-to-weibo",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "baoyu-translate",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "baoyu-wechat-summary",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "baoyu-youtube-transcript",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "best-practice-research",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "bp-due-diligence",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "cancel",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "cfx-briefing",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "changelog-generator",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "chronicle",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "ci-fix",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "city-weather-cover",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "claude-audit",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "code-review",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "code-reviewer",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "competitive-ads-extractor",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "complexity-optimizer",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "configure-notifications",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "content-research-writer",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "create-pull-request",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "dajia",
+      "sourceRoot": "project-dajia"
+    },
+    {
+      "name": "dbt-model-index",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "deep-interview",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "design",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "developer-growth-analysis",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "dlp-scanner",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "docs-update",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "doctor",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "domain-name-brainstormer",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "evmbench",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "excel-analysis",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "experience-evolution",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "file-organizer",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "find-docs",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "flyai",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "getmedia",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "git-commit-helper",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "github-bug-report-triage",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "github-issue-dedupe",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "graphify",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "guizang-ppt-skill",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-admin",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-admin-reports",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-alertcenter",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-apps-script",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-apps-script-push",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-calendar",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-calendar-agenda",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-calendar-insert",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-chat",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-chat-send",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-classroom",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-cloudidentity",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-docs",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-docs-write",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-drive",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-drive-upload",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-events",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-events-renew",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-events-subscribe",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-forms",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-gmail",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-gmail-send",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-gmail-triage",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-gmail-watch",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-groupssettings",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-keep",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-licensing",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-meet",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-modelarmor",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-modelarmor-create-template",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-modelarmor-sanitize-prompt",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-modelarmor-sanitize-response",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-people",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-reseller",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-shared",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-sheets",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-sheets-append",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-sheets-read",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-slides",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-tasks",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-vault",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-workflow",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-workflow-email-to-task",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-workflow-file-announce",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-workflow-meeting-prep",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-workflow-standup-report",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "gws-workflow-weekly-digest",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "html-to-pdf",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "hud",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "ian-xiaohei-illustrations",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "image-enhancer",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "invoice-organizer",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "lead-research-assistant",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "logo-design",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "market-sizing",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "meeting-insights-analyzer",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "multi-api-aggregator",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "nano-banana-image-generator",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "nightly-audit",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "notebooklm",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "obsidian-web-clipper",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "okx-dex-market",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "okx-dex-swap",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "okx-dex-token",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "okx-onchain-gateway",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "okx-wallet-portfolio",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "omx-setup",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "paseo",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "paseo-chat",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "paseo-committee",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "paseo-handoff",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "paseo-loop",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "paseo-orchestrator",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "performance-goal",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "persona-content-creator",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "persona-customer-support",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "persona-event-coordinator",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "persona-exec-assistant",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "persona-hr-coordinator",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "persona-it-admin",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "persona-project-manager",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "persona-researcher",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "persona-sales-ops",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "persona-team-lead",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "pinchtab",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "pipeline",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "plan",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "plan-as-consultant",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "planning-with-files",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "product-rnd",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "project-context-sync",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "prometheus-strict",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "pua",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "raffle-winner-picker",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "ralph",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "ralplan",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "recipe-audit-external-sharing",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-backup-sheet-as-csv",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-batch-invite-to-event",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-batch-rename-files",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-batch-reply-to-emails",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-block-focus-time",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-bulk-download-folder",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-cancel-and-notify",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-collect-form-responses",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-compare-sheet-tabs",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-copy-sheet-for-new-month",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-create-classroom-course",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-create-doc-from-template",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-create-events-from-sheet",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-create-expense-tracker",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-create-feedback-form",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-create-gmail-filter",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-create-meet-space",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-create-presentation",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-create-shared-drive",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-create-task-list",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-create-vacation-responder",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-deploy-apps-script",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-draft-email-from-doc",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-email-drive-link",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-find-free-time",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-find-large-files",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-forward-labeled-emails",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-generate-report-from-sheet",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-label-and-archive-emails",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-log-deal-update",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-organize-drive-folder",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-plan-weekly-schedule",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-post-mortem-setup",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-reschedule-meeting",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-review-meet-participants",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-review-overdue-tasks",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-save-email-attachments",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-save-email-to-doc",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-schedule-recurring-event",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-search-and-export-emails",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-send-personalized-emails",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-send-team-announcement",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-share-doc-and-notify",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-share-event-materials",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-share-folder-with-team",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-sync-contacts-to-sheet",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-transfer-file-ownership",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-triage-security-alerts",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "recipe-watch-drive-changes",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "reflect",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "scheduler",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "security-framework",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "security-review",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "seedance",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "seo-aeo-audit",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "session-end",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "skill",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "skill-share",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "skills-audit",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "slack-qa-investigate",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "source-command-e2e",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "source-command-plan",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "source-command-tdd",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "startup-pressure-test",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "systematic-debugging",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "tdd-workflow",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "team",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "terraform-style-check",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "ultragoal",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "ultraqa",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "ultrawork",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "vercel-react-best-practices",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "verification-before-completion",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "video-downloader",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "visual-ralph",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "web-accessibility-audit",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "web-design-guidelines",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "web-performance-audit",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "web-to-doc",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "weread-skills",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "wiki",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "worker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "wx-cli",
+      "sourceRoot": "agents-home"
+    },
+    {
+      "name": "xtod",
+      "sourceRoot": "agents-home"
+    }
+  ],
+  "copiedCount": 241,
+  "excludedCount": 223,
+  "excludedSample": [
+    {
+      "name": "lark-mail",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "brave-search",
+      "reason": "_meta.json",
+      "root": "agents-home"
+    },
+    {
+      "name": "react-email",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "agents-home"
+    },
+    {
+      "name": "agent-browser",
+      "reason": "lock:vercel-labs/agent-browser",
+      "root": "agents-home"
+    },
+    {
+      "name": "ink",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "agents-home"
+    },
+    {
+      "name": "deployer",
+      "reason": "lock:Uniswap/uniswap-ai",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-minutes",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "remotion-best-practices",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "agents-home"
+    },
+    {
+      "name": "template-skill",
+      "reason": "lock:anthropics/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "svelte",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "agents-home"
+    },
+    {
+      "name": "apple-hig",
+      "reason": "_meta.json",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-openapi-explorer",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-skill-maker",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-calendar",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "core",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "agents-home"
+    },
+    {
+      "name": "theme-factory",
+      "reason": "lock:anthropics/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-workflow-standup-report",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "baoyu-xhs-images",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-wiki",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "uml",
+      "reason": "lock:markdown-viewer/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "react-native",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "agents-home"
+    },
+    {
+      "name": "firecrawl-download",
+      "reason": "lock:firecrawl/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "baoyu-infographic",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "doc-coauthoring",
+      "reason": "lock:anthropics/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "swap-integration",
+      "reason": "lock:Uniswap/uniswap-ai",
+      "root": "agents-home"
+    },
+    {
+      "name": "infographic",
+      "reason": "lock:markdown-viewer/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "vega",
+      "reason": "lock:markdown-viewer/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "nextjs-expert",
+      "reason": "_meta.json",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-markdown",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "firecrawl",
+      "reason": "lock:firecrawl/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "vitess",
+      "reason": "lock:planetscale/database-skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "follow-builders",
+      "reason": ".git",
+      "root": "agents-home"
+    },
+    {
+      "name": "health",
+      "reason": "lock:tw93/claude-health",
+      "root": "agents-home"
+    },
+    {
+      "name": "vue",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "agents-home"
+    },
+    {
+      "name": "react-pdf",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "agents-home"
+    },
+    {
+      "name": "firecrawl-agent",
+      "reason": "lock:firecrawl/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "baoyu-cover-image",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "network",
+      "reason": "lock:markdown-viewer/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "firecrawl-scrape",
+      "reason": "lock:firecrawl/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "shadcn",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-okr",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "baoyu-post-to-wechat",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "gstack",
+      "reason": ".git",
+      "root": "agents-home"
+    },
+    {
+      "name": "xlsx",
+      "reason": "lock:anthropics/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "summarize",
+      "reason": "_meta.json",
+      "root": "agents-home"
+    },
+    {
+      "name": "baoyu-danger-gemini-web",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "pdf",
+      "reason": "lock:anthropics/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "find-skills",
+      "reason": "lock:vercel-labs/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "wireframe",
+      "reason": "lock:markdown-viewer/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "firecrawl-map",
+      "reason": "lock:firecrawl/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "post-to-xhs",
+      "reason": ".git",
+      "root": "agents-home"
+    },
+    {
+      "name": "kami",
+      "reason": "lock:tw93/kami",
+      "root": "agents-home"
+    },
+    {
+      "name": "solid",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-doc",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "algorithmic-art",
+      "reason": "lock:anthropics/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "mcp",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "agents-home"
+    },
+    {
+      "name": "liquidity-planner",
+      "reason": "lock:Uniswap/uniswap-ai",
+      "root": "agents-home"
+    },
+    {
+      "name": "codegen",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-contact",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "image",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "agents-home"
+    },
+    {
+      "name": "canvas",
+      "reason": "lock:markdown-viewer/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "notion",
+      "reason": "_meta.json",
+      "root": "agents-home"
+    },
+    {
+      "name": "recall",
+      "reason": "lock:arjunkmrm/recall",
+      "root": "agents-home"
+    },
+    {
+      "name": "swap-planner",
+      "reason": "lock:Uniswap/uniswap-ai",
+      "root": "agents-home"
+    },
+    {
+      "name": "mckinsey-consultant",
+      "reason": "lock:fleurytian/awesome-claude-skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-vc-agent",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "baoyu-format-markdown",
+      "reason": "lock:JimLiu/baoyu-skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "internal-comms",
+      "reason": "lock:anthropics/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "baoyu-danger-x-to-markdown",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "baoyu-compress-image",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-vc",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "postgres",
+      "reason": "lock:planetscale/database-skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "architecture",
+      "reason": "lock:markdown-viewer/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "skill-creator",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "agents-home"
+    },
+    {
+      "name": "xstate",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "agents-home"
+    },
+    {
+      "name": "canvas-design",
+      "reason": "lock:anthropics/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "drawio",
+      "reason": "lock:markdown-viewer/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "github",
+      "reason": "_meta.json",
+      "root": "agents-home"
+    },
+    {
+      "name": "slowmist-agent-security",
+      "reason": "_meta.json",
+      "root": "agents-home"
+    },
+    {
+      "name": "surf",
+      "reason": "lock:asksurf-ai/surf-skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-drive",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-workflow-meeting-summary",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "baoyu-comic",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "pptx",
+      "reason": "lock:anthropics/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-event",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-apps",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "firecrawl-search",
+      "reason": "lock:firecrawl/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "mysql",
+      "reason": "lock:planetscale/database-skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-attendance",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "graphviz",
+      "reason": "lock:markdown-viewer/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "firecrawl-crawl",
+      "reason": "lock:firecrawl/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "v4-security-foundations",
+      "reason": "lock:Uniswap/uniswap-ai",
+      "root": "agents-home"
+    },
+    {
+      "name": "cloud",
+      "reason": "lock:markdown-viewer/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "baoyu-post-to-x",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-shared",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "slack-gif-creator",
+      "reason": "lock:anthropics/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "tmux",
+      "reason": "_meta.json",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-base",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "frontend-slides",
+      "reason": ".git",
+      "root": "agents-home"
+    },
+    {
+      "name": "release-skills",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "yaml",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "agents-home"
+    },
+    {
+      "name": "webapp-testing",
+      "reason": "lock:anthropics/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-slides",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "baoyu-image-gen",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "mermaid",
+      "reason": "lock:markdown-viewer/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "weather",
+      "reason": "_meta.json",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-im",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "neki",
+      "reason": "lock:planetscale/database-skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "zustand",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "agents-home"
+    },
+    {
+      "name": "baoyu-slide-deck",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "debug-pro",
+      "reason": "_meta.json",
+      "root": "agents-home"
+    },
+    {
+      "name": "docker-essentials",
+      "reason": "_meta.json",
+      "root": "agents-home"
+    },
+    {
+      "name": "baoyu-markdown-to-html",
+      "reason": "lock:JimLiu/baoyu-skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "frontend-design",
+      "reason": "lock:anthropics/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "baoyu-article-illustrator",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "configurator",
+      "reason": "lock:Uniswap/uniswap-ai",
+      "root": "agents-home"
+    },
+    {
+      "name": "jotai",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "agents-home"
+    },
+    {
+      "name": "viem-integration",
+      "reason": "lock:Uniswap/uniswap-ai",
+      "root": "agents-home"
+    },
+    {
+      "name": "react-three-fiber",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "agents-home"
+    },
+    {
+      "name": "browser-use",
+      "reason": "lock:browser-use/browser-use",
+      "root": "agents-home"
+    },
+    {
+      "name": "firecrawl-browser",
+      "reason": "lock:firecrawl/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "mcp-builder",
+      "reason": "lock:anthropics/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "redux",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-sheets",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "react",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-task",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "agentation",
+      "reason": "lock:benjitaylor/agentation",
+      "root": "agents-home"
+    },
+    {
+      "name": "brand-guidelines",
+      "reason": "lock:anthropics/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "engineering",
+      "reason": "lock:markdown-viewer/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-whiteboard",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "docx",
+      "reason": "lock:anthropics/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "baoyu-url-to-markdown",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "floor-plan",
+      "reason": "lock:markdown-viewer/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "remotion",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "agents-home"
+    },
+    {
+      "name": "lark-approval",
+      "reason": "lock:larksuite/cli",
+      "root": "agents-home"
+    },
+    {
+      "name": "web-artifacts-builder",
+      "reason": "lock:anthropics/skills",
+      "root": "agents-home"
+    },
+    {
+      "name": "hugging-face-tool-builder",
+      "reason": "plugin-cache",
+      "root": "codex-home"
+    },
+    {
+      "name": "remotion-best-practices",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "codex-home"
+    },
+    {
+      "name": "hugging-face-evaluation",
+      "reason": "plugin-cache",
+      "root": "codex-home"
+    },
+    {
+      "name": "baoyu-xhs-images",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "codex-home"
+    },
+    {
+      "name": "baoyu-infographic",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "codex-home"
+    },
+    {
+      "name": "context-engineering-collection",
+      "reason": "plugin-cache",
+      "root": "codex-home"
+    },
+    {
+      "name": "baoyu-cover-image",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "codex-home"
+    },
+    {
+      "name": "baoyu-post-to-wechat",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "codex-home"
+    },
+    {
+      "name": "baoyu-danger-gemini-web",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "codex-home"
+    },
+    {
+      "name": "pdf",
+      "reason": "lock:anthropics/skills",
+      "root": "codex-home"
+    },
+    {
+      "name": "find-skills",
+      "reason": "lock:vercel-labs/skills",
+      "root": "codex-home"
+    },
+    {
+      "name": "kami",
+      "reason": "lock:tw93/kami",
+      "root": "codex-home"
+    },
+    {
+      "name": "hugging-face-datasets",
+      "reason": "plugin-cache",
+      "root": "codex-home"
+    },
+    {
+      "name": "baoyu-format-markdown",
+      "reason": "lock:JimLiu/baoyu-skills",
+      "root": "codex-home"
+    },
+    {
+      "name": "baoyu-danger-x-to-markdown",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "codex-home"
+    },
+    {
+      "name": "baoyu-compress-image",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "codex-home"
+    },
+    {
+      "name": "baoyu-comic",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "codex-home"
+    },
+    {
+      "name": "hugging-face-cli",
+      "reason": "plugin-cache",
+      "root": "codex-home"
+    },
+    {
+      "name": "baoyu-post-to-x",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "codex-home"
+    },
+    {
+      "name": "hugging-face-jobs",
+      "reason": "plugin-cache",
+      "root": "codex-home"
+    },
+    {
+      "name": "release-skills",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "codex-home"
+    },
+    {
+      "name": "hugging-face-paper-publisher",
+      "reason": "plugin-cache",
+      "root": "codex-home"
+    },
+    {
+      "name": "webapp-testing",
+      "reason": "lock:anthropics/skills",
+      "root": "codex-home"
+    },
+    {
+      "name": "baoyu-image-gen",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "codex-home"
+    },
+    {
+      "name": "baoyu-slide-deck",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "codex-home"
+    },
+    {
+      "name": "baoyu-markdown-to-html",
+      "reason": "lock:JimLiu/baoyu-skills",
+      "root": "codex-home"
+    },
+    {
+      "name": "baoyu-article-illustrator",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "codex-home"
+    },
+    {
+      "name": "hugging-face-model-trainer",
+      "reason": "plugin-cache",
+      "root": "codex-home"
+    },
+    {
+      "name": "mcp-builder",
+      "reason": "lock:anthropics/skills",
+      "root": "codex-home"
+    },
+    {
+      "name": "agentation",
+      "reason": "lock:benjitaylor/agentation",
+      "root": "codex-home"
+    },
+    {
+      "name": "magicpath",
+      "reason": "lock:MagicPathAI/agent-skills",
+      "root": "codex-home"
+    },
+    {
+      "name": "baoyu-url-to-markdown",
+      "reason": "lock:jimliu/baoyu-skills",
+      "root": "codex-home"
+    },
+    {
+      "name": "directives",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "react-email",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "ink",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "next",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "remotion-best-practices",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "svelte",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "shadcn-svelte",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "core",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "react-native",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "vue",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "react-pdf",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "shadcn",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "solid",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "mcp",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "codegen",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "image",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "skill-creator",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "xstate",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "devtools",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "yaml",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "zustand",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "jotai",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "react-three-fiber",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "redux",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "react",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    },
+    {
+      "name": "remotion",
+      "reason": "lock:vercel-labs/json-render",
+      "root": "github-dot-agents"
+    }
+  ],
+  "excludedTightened": [
+    {
+      "name": "cloudflare-deploy",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "develop-web-game",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "doc",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "figma",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "figma-implement-design",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "gh-address-comments",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "gh-fix-ci",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "hugging-face-trackio",
+      "reason": "has .claude-plugin/plugin.json installed-plugin metadata",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "imagegen",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "jupyter-notebook",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "linear",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "netlify-deploy",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "notion-knowledge-capture",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "notion-meeting-intelligence",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "notion-research-documentation",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "notion-spec-to-implementation",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "openai-docs",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "playwright",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "render-deploy",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "screenshot",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "security-best-practices",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "security-ownership-map",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "security-threat-model",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "sentry",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "sora",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "speech",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "transcribe",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "vercel-deploy",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    },
+    {
+      "name": "yeet",
+      "reason": "codex-home skill with packaged LICENSE.txt marker",
+      "sourceRoot": "codex-home"
+    }
+  ],
+  "generatedAt": "2026-06-03T09:48:26+0800",
+  "installedLockCount": 129,
+  "installedSources": {
+    "JimLiu/baoyu-skills": 2,
+    "MagicPathAI/agent-skills": 1,
+    "Uniswap/uniswap-ai": 7,
+    "anthropics/skills": 17,
+    "arjunkmrm/recall": 1,
+    "asksurf-ai/surf-skills": 1,
+    "benjitaylor/agentation": 1,
+    "browser-use/browser-use": 1,
+    "firecrawl/cli": 19,
+    "fleurytian/awesome-claude-skills": 1,
+    "jimliu/baoyu-skills": 14,
+    "larksuite/cli": 26,
+    "markdown-viewer/skills": 13,
+    "planetscale/database-skills": 4,
+    "remotion-dev/skills": 1,
+    "tw93/claude-health": 1,
+    "tw93/kami": 1,
+    "vercel-labs/agent-browser": 1,
+    "vercel-labs/json-render": 27,
+    "vercel-labs/skills": 1
+  },
+  "localOnlyFilesExcluded": [
+    "wx-cli/.claude/settings.local.json"
+  ],
+  "policy": "Copied local editable skills with SKILL.md; excluded lock-listed installed sources, _meta.json registry skills, nested git repos, plugin cache symlinks, backups, caches, and credential-like files. Existing symlinks for included local skills were replaced with real directories. Excluded installed-package markers not reliably represented in lock files: .claude-plugin/plugin.json and codex-home packaged LICENSE.txt assets; removed machine-local settings such as .claude/settings.local.json.",
+  "skipped": [],
+  "skippedCount": 0
+}

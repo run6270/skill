@@ -1,0 +1,6 @@
+interface:
+  display_name: "BP Due Diligence"
+  short_description: "BP 深度尽调、产品实测与一页纸报告生成"
+  default_prompt: "Use $bp-due-diligence to analyze this BP and generate a deep due diligence report plus one-page PDF."
+policy:
+  allow_implicit_invocation: true

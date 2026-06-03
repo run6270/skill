@@ -27,17 +27,17 @@ This is the north star. Every capability, every phase, every ISC row exists to s
 
 ```bash
 # Start algorithm with effort level (shows banner + announces via voice)
-bun run ~/.claude/skills/THEALGORITHM/Tools/AlgorithmDisplay.ts start THOROUGH -r "your request"
+bun run ~/.Codex/skills/THEALGORITHM/Tools/AlgorithmDisplay.ts start THOROUGH -r "your request"
 
 # Transition phases (updates display + voice announcement)
-bun run ~/.claude/skills/THEALGORITHM/Tools/AlgorithmDisplay.ts phase THINK
-bun run ~/.claude/skills/THEALGORITHM/Tools/AlgorithmDisplay.ts phase EXECUTE
+bun run ~/.Codex/skills/THEALGORITHM/Tools/AlgorithmDisplay.ts phase THINK
+bun run ~/.Codex/skills/THEALGORITHM/Tools/AlgorithmDisplay.ts phase EXECUTE
 
 # Show current status anytime
-bun run ~/.claude/skills/THEALGORITHM/Tools/AlgorithmDisplay.ts show
+bun run ~/.Codex/skills/THEALGORITHM/Tools/AlgorithmDisplay.ts show
 
 # Show just the effort banner
-bun run ~/.claude/skills/THEALGORITHM/Tools/AlgorithmDisplay.ts effort DETERMINED
+bun run ~/.Codex/skills/THEALGORITHM/Tools/AlgorithmDisplay.ts effort DETERMINED
 ```
 
 **The display shows:**
@@ -52,28 +52,28 @@ bun run ~/.claude/skills/THEALGORITHM/Tools/AlgorithmDisplay.ts effort DETERMINE
 
 ```bash
 # 1. START WITH VISUAL DISPLAY (shows banner + voice announcement)
-bun run ~/.claude/skills/THEALGORITHM/Tools/AlgorithmDisplay.ts start STANDARD -r "your request"
+bun run ~/.Codex/skills/THEALGORITHM/Tools/AlgorithmDisplay.ts start STANDARD -r "your request"
 
 # 2. CLASSIFY EFFORT (if not using display start)
-bun run ~/.claude/skills/THEALGORITHM/Tools/EffortClassifier.ts --request "your request"
+bun run ~/.Codex/skills/THEALGORITHM/Tools/EffortClassifier.ts --request "your request"
 # Or with override: --override DETERMINED
 # Or inline: "algorithm effort THOROUGH: your request"
 
 # 3. LOAD CAPABILITIES for effort level
-bun run ~/.claude/skills/THEALGORITHM/Tools/CapabilityLoader.ts --effort STANDARD
+bun run ~/.Codex/skills/THEALGORITHM/Tools/CapabilityLoader.ts --effort STANDARD
 
 # 4. CREATE ISC
-bun run ~/.claude/skills/THEALGORITHM/Tools/ISCManager.ts create --request "your request"
+bun run ~/.Codex/skills/THEALGORITHM/Tools/ISCManager.ts create --request "your request"
 
 # 5. TRANSITION PHASES (voice + visual update)
-bun run ~/.claude/skills/THEALGORITHM/Tools/AlgorithmDisplay.ts phase THINK
-bun run ~/.claude/skills/THEALGORITHM/Tools/AlgorithmDisplay.ts phase PLAN
+bun run ~/.Codex/skills/THEALGORITHM/Tools/AlgorithmDisplay.ts phase THINK
+bun run ~/.Codex/skills/THEALGORITHM/Tools/AlgorithmDisplay.ts phase PLAN
 # ... continues through EXECUTE, VERIFY, LEARN
 
 # 6. MANAGE ISC during EXECUTE
-bun run ~/.claude/skills/THEALGORITHM/Tools/ISCManager.ts capability --row 1 -c research.perplexity
-bun run ~/.claude/skills/THEALGORITHM/Tools/ISCManager.ts update --row 1 --status DONE
-bun run ~/.claude/skills/THEALGORITHM/Tools/ISCManager.ts show
+bun run ~/.Codex/skills/THEALGORITHM/Tools/ISCManager.ts capability --row 1 -c research.perplexity
+bun run ~/.Codex/skills/THEALGORITHM/Tools/ISCManager.ts update --row 1 --status DONE
+bun run ~/.Codex/skills/THEALGORITHM/Tools/ISCManager.ts show
 ```
 
 ## Effort → Capability Matrix
@@ -170,7 +170,7 @@ Every non-trivial task has an ISC. **Display this prominently throughout executi
 ### Step 1: EFFORT CLASSIFICATION (REQUIRED FIRST)
 
 ```bash
-bun run ~/.claude/skills/THEALGORITHM/Tools/EffortClassifier.ts --request "your request"
+bun run ~/.Codex/skills/THEALGORITHM/Tools/EffortClassifier.ts --request "your request"
 ```
 
 **Override methods:**
@@ -182,7 +182,7 @@ The effort level determines ALL available capabilities.
 ### Step 2: CAPABILITY LOADING
 
 ```bash
-bun run ~/.claude/skills/THEALGORITHM/Tools/CapabilityLoader.ts --effort STANDARD
+bun run ~/.Codex/skills/THEALGORITHM/Tools/CapabilityLoader.ts --effort STANDARD
 ```
 
 Returns available: models, thinking modes, debate systems, research agents, execution agents, verification.
@@ -192,10 +192,10 @@ Returns available: models, thinking modes, debate systems, research agents, exec
 For each ISC row, select appropriate capability:
 
 ```bash
-bun run ~/.claude/skills/THEALGORITHM/Tools/CapabilitySelector.ts --row "Research best practices" --effort STANDARD
+bun run ~/.Codex/skills/THEALGORITHM/Tools/CapabilitySelector.ts --row "Research best practices" --effort STANDARD
 # Returns: research.perplexity as primary, with icon 🔬
 
-bun run ~/.claude/skills/THEALGORITHM/Tools/ISCManager.ts capability --row 1 -c research.perplexity
+bun run ~/.Codex/skills/THEALGORITHM/Tools/ISCManager.ts capability --row 1 -c research.perplexity
 ```
 
 ### Step 4: ORCHESTRATED EXECUTION
@@ -250,7 +250,7 @@ Direct response, no ISC, no capability loading. Just answer.
 - `research.perplexity` - Web research, current events (STANDARD+)
 - `research.gemini` - Multi-perspective research (STANDARD+)
 - `research.grok` - Contrarian fact-checking (STANDARD+)
-- `research.claude` - Academic/scholarly sources (STANDARD+)
+- `research.Codex` - Academic/scholarly sources (STANDARD+)
 - `research.codex` - Technical code pattern research (STANDARD+)
 
 ### Execution Agents

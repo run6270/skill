@@ -1,0 +1,4 @@
+interface:
+  display_name: "City Weather Cover"
+  short_description: "Generate weather-aware city cover images"
+  default_prompt: "Generate a city weather cover for CITY_NAME using the current local weather, current local time, and a fitting landmark or historical figure."

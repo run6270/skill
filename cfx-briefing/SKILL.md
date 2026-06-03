@@ -1,478 +1,262 @@
 ---
 name: cfx-briefing
 description: >
-  Use this skill when the user wants to generate a CFX/Conflux investment briefing or report.
-  Trigger whenever the user asks for any kind of CFX or Conflux 投资分析、行情分析、投资简报、
-  市场分析、投资报告, or requests a report covering multiple data dimensions like 价格、链上数据、
-  推特舆情、巨鲸持仓、交易所数据. Also trigger on the bare input "CFX" or "cfx" alone — this is
-  the shortcut command. Also trigger on "CFX --api" or "CFX --md" commands. The skill runs a
-  multi-agent pipeline that pulls live data from 9+ sources and outputs a professional HTML briefing.
-  Essentially: if the user wants a comprehensive, multi-source research report about CFX/Conflux
-  for investment decisions, use this skill. Do NOT use for: single-dimension questions like price
-  checks, trading pairs, K-line technical analysis, Conflux development/coding questions, or
-  blockchain architecture discussions.
+  Use this skill when the user wants a CFX/Conflux investment briefing, market
+  report,行情分析,投资简报, or multi-source report covering price, exchange data,
+  on-chain data, governance, Twitter/X sentiment, whale holdings, and news.
+  Trigger on "CFX", "cfx", "CFX --api", "CFX --md", "生成CFX简报",
+  "Conflux简报", "今日CFX", and similar requests. This is the Codex-native
+  version. Never call Claude Code or /Users/mac/.local/bin/claude.
 base_dir_key: cfx-briefing
 ---
 
-# CFX 投资简报生成器
+# CFX 投资简报生成器 (Codex 原生版)
 
-## 命令
+## 硬规则
 
-| 命令 | 输出 |
-|------|------|
-| `CFX` / `CFX --api` | HTML |
-| `CFX --md` | Markdown |
+- 不调用 Claude Code CLI。
+- 不调用 `/Users/mac/.local/bin/claude`。
+- 不使用 Claude-only 的 `TeamCreate`、`TaskCreate`、`TaskOutput`、`TaskUpdate`。
+- 全程自动执行；API 失败直接降级，不问用户是否继续。
+- 不输出 `.env` 或任何 API Key。
+- 生成 HTML 时保留 10 个章节，缺失数据必须明确标注原因。
+- 每次日报都必须先做自我质量对标，不等用户提供其它模型报告才发现改进空间。
+- 默认质量下限是最近一份已验证合格日报；2026-05-16 起，`reports/daily/CFX简报_2026-05-16.html` 的完整度作为新的最低基线。
+- 最终日报不得低于该基线：10 个主章节、独立生态项目章节、16 个 X 账号逐账号表、数据来源状态、benchmark 证据文件、浏览器渲染截图都必须齐全。
 
-## 初始化（首次运行自动执行）
+## 项目目录定位
 
-> 每次执行简报前，先检查 `~/.claude/CLAUDE.md` 中是否已记录项目目录。
+优先级：
+1. 当前工作目录如果包含 `PROJECT_CONTEXT.md`、`TRACKING.md` 或 `.claude/skills/cfx-briefing`，直接作为 `$CFX_PROJECT_DIR`。
+2. 否则读取 `~/.codex/AGENTS.md`，查找 `cfx-briefing skill 的项目目录在：`。
+3. 仍找不到时，使用当前工作目录，并在最终报告中说明路径是假定值。
 
-**检查逻辑：**
-1. 读取 `~/.claude/CLAUDE.md`，查找是否包含 `cfx-briefing skill 的项目目录在：`
-2. **如果已存在**：直接使用记录的路径作为 `$CFX_PROJECT_DIR`，跳到执行流程
-3. **如果不存在**：将当前工作目录追加到 `~/.claude/CLAUDE.md`：
-   ```
-   - cfx-briefing skill 的项目目录在：<当前工作目录>
-   ```
+本项目默认目录：
 
-**Git 上下文热身（每次执行必做）：**
+```text
+/Users/mac/Documents/GitHub/CFX-DWF行情
+```
 
-在进入执行流程前，运行以下命令加载项目最近状态：
+## 必读文件
+
+按需读取，避免一次性加载全部历史简报：
+
+- `$CFX_PROJECT_DIR/PROJECT_CONTEXT.md`
+- `$CFX_PROJECT_DIR/TRACKING.md`
+- `$CFX_PROJECT_DIR/.claude/skills/cfx-briefing/modules/VOICE.md`
+- `$CFX_PROJECT_DIR/.claude/skills/cfx-briefing/modules/PRICE_ANALYSIS.md`
+- `$CFX_PROJECT_DIR/.claude/skills/cfx-briefing/modules/SENTIMENT.md`
+- `$CFX_PROJECT_DIR/.claude/skills/cfx-briefing/modules/TECH_UPDATE.md`
+- `$CFX_PROJECT_DIR/TRACKING.md` 中的生态激励、AxCNH、BSIM、Hexbit/Conflux 合作跟踪。
+- `reference/ecosystem_projects.md`（若在 skill 目录存在）中的生态项目清单。
+
+## 执行流程
+
+### Step 0: 状态热身
+
+在项目目录运行：
 
 ```bash
-cd $CFX_PROJECT_DIR && git log --oneline -10 && git status --short
+git log --oneline -10
+git status --short
+date '+%Y-%m-%d %H:%M:%S %Z'
 ```
 
-这一步让 Agent 立刻了解：上次做了什么、有哪些未提交的文件、当前项目状态。
+只汇报必要状态，不要暴露 `.env`。
 
-**路径引用规则：**
-- 脚本路径：`$CFX_PROJECT_DIR/scripts/fetch_orderbook.py`
-- 输出路径：`$CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html`
-- 环境变量：`$CFX_PROJECT_DIR/.env`
+### Step 0.5: 质量基线与自我对标
 
-## ⚠️ 核心规则：零确认执行
+生成前必须读取以下本地基线，不要跳过：
 
-**本 Skill 的所有操作必须全自动执行，严禁在任何环节暂停等待用户确认。**
+- `/Users/mac/.codex/automations/cfx/memory.md` 的最近 3 条 CFX 日报记录。
+- `reports/daily/` 中日期最近、通过验证的 `CFX简报_YYYY-MM-DD.html`。
+- 如果存在，读取 `reports/daily/CFX简报_2026-05-16.html` 和 `reports/benchmarks/cfx_briefing_data_2026-05-16.json`，把它们作为最低质量基线。
 
-具体要求：
-1. **Task Agent 必须使用 `mode: "bypassPermissions"`** — 所有并行 Agent 自动执行所有工具
-2. **不询问"是否继续"** — 数据获取、HTML 生成、文件打开全部自动
-3. **不展示中间结果等确认** — 拿到数据直接进入下一步
-4. **API 失败自动降级** — 不问用户"要不要试备用方案"，直接试
-5. **数据缺失自动标注** — 写"⚠️ 数据暂不可用"，不停下来问
+对标检查必须在心里或临时笔记中覆盖：
 
-**错误示范（禁止）：**
-- "我已获取到价格数据，是否继续获取订单簿？" ❌
-- "OKX API 返回 403，要尝试备用方案吗？" ❌
-- "以下是 7 个 Agent 的数据，确认后我开始生成 HTML" ❌
-- "HTML 已生成，要打开吗？" ❌
+- 最新基线是否包含 10 个准确 H2 主章节。
+- 是否有独立的「生态项目」章节，而不是把生态内容塞进新闻。
+- 是否有 16 个监控账号逐账号表格，而不是三张超时卡片。
+- 是否有 ConfluxHub 浏览器渲染快照、原始数据 benchmark、HTML 渲染截图。
+- 是否明确区分实时数据、缓存数据、历史基准和接口失败。
 
-**正确做法：** 从头到尾一气呵成，用户只看到最终结果。
+如果当天新稿缺少基线中已有的结构、字段或证据文件，先修复再进入最终回复。
 
-## 🚨 强制并行架构（MANDATORY - 不可跳过）
+### Step 1: 并行采集数据
 
-> **本 Skill 必须使用 Agent Teams 并行执行。违反此规则等同于 Skill 执行失败。**
+在 Codex 中用可用工具并行采集独立数据源。能用 `multi_tool_use.parallel` 时优先并行读取 shell/API 输出；需要最新外部消息时必须联网检索并引用来源。
 
-### 执行架构强制要求
+价格：
 
-1. **必须调用 `TeamCreate` 创建团队** — 团队名: `cfx-briefing-YYYY-MM-DD`
-2. **必须使用 `Task` 工具派发 7 个并行 Agent** — 每个 Agent 用 `subagent_type: "general-purpose"`, `mode: "bypassPermissions"`, `run_in_background: true`
-3. **必须在一个 tool call 中同时派发所有 7 个 Task** — 不允许串行派发
-4. **主进程禁止直接调用 curl/WebFetch/WebSearch 获取数据** — 所有数据获取必须由子 Agent 完成
-5. **用 `TaskOutput` 收集所有 Agent 结果后再生成 HTML**
-
-### 禁止的执行方式（违反=失败）
-
-- ❌ 主进程自己 curl 获取价格 → **必须由 Agent 1 获取**
-- ❌ 串行启动 Agent（等 Agent 1 完成再启动 Agent 2）→ **必须同时启动全部 7 个**
-- ❌ 不创建 Team 直接跑 → **必须先 TeamCreate**
-- ❌ 用 `subagent_type: "Bash"` → **必须用 `"general-purpose"`**（需要多工具能力）
-- ❌ 跳过 Agent Teams 用 fork 进程串行执行 → **这是最常见的错误，严禁！**
-
-### 正确的执行伪代码
-
-```
-1. TeamCreate(team_name="cfx-briefing-2026-02-16")
-2. Read .env → 获取 XAI_API_KEY
-3. 在同一个 response 中同时调用 7 个 Task():
-   - Task(name="agent-1-price", prompt="...", subagent_type="general-purpose", mode="bypassPermissions", run_in_background=true, team_name="cfx-briefing-2026-02-16")
-   - Task(name="agent-2-orderbook", ...)
-   - Task(name="agent-3-twitter", ...)
-   - Task(name="agent-4-onchain", ...)
-   - Task(name="agent-5-governance", ...)
-   - Task(name="agent-6-whale", ...)
-   - Task(name="agent-7-news", ...)
-4. TaskOutput() × 7 收集结果
-5. 组装 HTML → Write
-6. open 打开文件
-7. TeamDelete() 清理
-```
-
-## 执行流程（全自动 3 步）
-
-### Step 1: 创建团队 + 并行获取 7 类数据
-
-**先创建团队，然后在同一个 tool call 中同时启动 7 个 Task Agent：**
-
-先读取 `$CFX_PROJECT_DIR/.env` 获取 `XAI_API_KEY`，然后并行派发：
-
-#### Agent 1: 价格数据
 ```bash
 curl -s "https://api.coingecko.com/api/v3/coins/conflux-token?localization=false&tickers=false&community_data=false&developer_data=false&sparkline=false"
-# 提取: current_price.usd, price_change_percentage_24h, price_change_percentage_7d, market_cap, total_volume
-# 备用: curl -s "https://coins.llama.fi/prices/current/coingecko:conflux-token"
+curl -s "https://coins.llama.fi/prices/current/coingecko:conflux-token"
 ```
 
-#### Agent 2: 订单簿（4 交易所，自动跳过失败的）
+提取：
+- `current_price.usd`
+- `price_change_percentage_24h`
+- `price_change_percentage_7d`
+- `price_change_percentage_30d`
+- `market_cap.usd`
+- `total_volume.usd`
+- `circulating_supply`
+- `market_cap_rank`
+
+交易所盘口：
+
 ```bash
-# 全部并行请求，任何一个 403/超时 → 标记"接口受限"，不停
 curl -s "https://api.binance.com/api/v3/ticker/24hr?symbol=CFXUSDT"
 curl -s "https://www.okx.com/api/v5/market/ticker?instId=CFX-USDT"
 curl -s "https://api.gateio.ws/api/v4/spot/tickers?currency_pair=CFX_USDT"
 curl -s "https://api.mexc.com/api/v3/ticker/24hr?symbol=CFXUSDT"
+python3 "$CFX_PROJECT_DIR/scripts/fetch_orderbook.py"
 ```
 
-#### Agent 3: 推特舆情（Grok Agent Tools API）
-```bash
-# ⚠️ 必须用新 API: POST https://api.x.ai/v1/responses
-# Model: grok-4-1-fast-reasoning
-# 工具: x_search（每批最多 10 个账号）
-# 分 2 批：
-#   批次1: Conflux_Network, Conflux_Intern, CamillaCaban, CikeinWeb3, SwappiDEX, OfficialNucleon, dForcenet, BitUnion_Card, Joyzinweb3, forgivenever
-#   批次2: estherinweb3, FanLong16, GuangYang_9, AnchorX_Ltd, HexbitApp, bxiaokang
-# 输出: 每个账号的 sentiment (BULLISH/NEUTRAL/SILENT) + 摘要
-```
+链上：
 
-#### Agent 4: 链上数据
 ```bash
-# TVL
-curl -s "https://api.llama.fi/v2/chains" | python3 -c "import sys,json; data=json.load(sys.stdin); cfx=[c for c in data if c.get('name')=='Conflux']; print(json.dumps({'tvl': cfx[0]['tvl'] if cfx else 'N/A'}))"
-
-# Core Space 账户
+curl -s "https://api.llama.fi/v2/chains"
+curl -s "https://api.llama.fi/v2/historicalChainTvl/Conflux"
 curl -s "https://api.confluxscan.io/statistics/account/growth?duration=day&intervalType=day"
-
-# eSpace 账户
 curl -s "https://evmapi.confluxscan.io/statistics/account/growth?duration=day&intervalType=day"
-
-# AxCNH（如果脚本存在就跑，不存在就跳过）
-python3 $CFX_PROJECT_DIR/scripts/fetch_axcnh_data.py 2>/dev/null || echo '{"success":false}'
+python3 "$CFX_PROJECT_DIR/scripts/fetch_axcnh_data.py"
 ```
 
-#### Agent 5: 治理投票（Chrome DevTools）
-```
-mcp__chrome-devtools__navigate_page → https://confluxhub.io/governance/vote/onchain-dao-voting
-mcp__chrome-devtools__take_snapshot
-# 解析: Round 轮次、投票期、4 个参数的当前值/即将生效/投票中
-# 如果页面加载失败 → WebSearch "Conflux governance Round voting 2026" 作为备用
-# 如果都失败 → 返回 "当前无进行中的治理投票"
-```
+治理：
+- 用 Chrome DevTools / browser-use 打开 `https://confluxhub.io/vote/chain-params/`。
+- 等页面渲染完成后取 snapshot。
+- 提取 Round、最低投票权、截止时间、PoW Base Reward、Interest Rate、Storage Point Prop、Base Fee Sharing Prop 的 Current / Coming Effective / In voting。
+- 如果页面只显示 placeholder，等待 5-10 秒后重试 snapshot。
+- 如果仍失败，标注 `治理页面渲染失败`，不要编造。
 
-#### Agent 6: 巨鲸持仓
-```
-WebFetch → https://www.coincarp.com/currencies/confluxtoken/richlist/
-# 提取: Top10/20/50/100 占比、近期大户异动
-# 如果失败 → WebSearch "Conflux CFX whale holdings top holders 2026"
-```
-
-#### Agent 7: 新闻消息面
-```
-WebSearch → "Conflux CFX news February 2026"
-# 提取: 交易所上线、技术升级、合作伙伴、牌照进展
-```
-
-### Step 2: 收集结果 + 生成 HTML
-
-**用 `TaskOutput` 逐个收集 7 个 Agent 的结果（可并行调用多个 TaskOutput）：**
-
-```
-TaskOutput(task_id="agent-1-price-的task_id", block=true, timeout=120000)
-TaskOutput(task_id="agent-2-orderbook-的task_id", block=true, timeout=120000)
-TaskOutput(task_id="agent-3-twitter-的task_id", block=true, timeout=180000)  # 推特较慢
-TaskOutput(task_id="agent-4-onchain-的task_id", block=true, timeout=120000)
-TaskOutput(task_id="agent-5-governance-的task_id", block=true, timeout=120000)
-TaskOutput(task_id="agent-6-whale-的task_id", block=true, timeout=120000)
-TaskOutput(task_id="agent-7-news-的task_id", block=true, timeout=120000)
-```
-
-**收集完毕后，立即组装 HTML，不展示中间数据等确认。**
-
-缺失数据处理（自动，不问）：
-- API 失败的交易所 → 表格中标注 `<span class="tag tag-red">接口受限</span>`
-- 推特账号无发言 → 归入"沉默"分类
-- AxCNH 数据失败 → 显示 `⚠️ 数据暂不可用`
-- 治理投票无数据 → 显示 `✅ 当前无进行中的治理投票`
-- Agent 超时 → 使用已有数据，超时章节标注 `⚠️ 获取超时`
-
-**⚠️ HTML 文件写入规则（强制）：**
-
-HTML 简报通常 300-400 行，超过 Write 工具的 content size 限制。**必须使用 Bash `cat` heredoc 分段写入**：
+巨鲸：
 
 ```bash
-# 第1段：HTML head + CSS + 第1-2章（价格+订单簿）
-cat > $CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html << 'HTMLPART1'
-<!DOCTYPE html>...第1-2章内容...
-HTMLPART1
-
-# 第2段：第3-4章（治理+巨鲸）
-cat >> $CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html << 'HTMLPART2'
-...第3-4章内容...
-HTMLPART2
-
-# 第3段：第5-6章（链上+推特）
-cat >> $CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html << 'HTMLPART3'
-...第5-6章内容...
-HTMLPART3
-
-# 第4段：第7章（新闻）
-cat >> $CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html << 'HTMLPART4'
-...第7章内容...
-HTMLPART4
-
-# 第5段：第8-9章（综合评估+数据来源+footer）
-cat >> $CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html << 'HTMLPART5'
-...第8-9章+</body></html>...
-HTMLPART5
+python3 "$CFX_PROJECT_DIR/scripts/fetch_whale_data.py"
 ```
 
-**关键规则：**
-- ❌ 禁止使用 `Write` 工具写入 HTML（会因 content size 限制失败）
-- ✅ 必须用 `Bash` + `cat` heredoc 分 5 段写入（`>` 创建 + `>>` 追加）
-- ✅ 每段控制在 80 行以内，避免单次 Bash 输入过大
-- ✅ 5 段 Bash 调用可以顺序执行（有依赖关系，不能并行）
+如果 CoinCarp 解析失败但脚本返回历史缓存，必须在简报中写明 `使用历史基准数据`，不要把缓存当作实时异动。
 
-### Step 2.5: 质量评估（可选，首次生成跳过）
+推特/X 舆情：
+- 读取 `$CFX_PROJECT_DIR/.env` 只用于加载 `XAI_API_KEY`，不要打印内容。
+- 必须使用 `POST https://api.x.ai/v1/responses`。
+- 模型优先 `grok-4-1-fast-reasoning`；如官方模型列表变化，先用 `/v1/models` 确认，再回退到文档示例的 `grok-4.20-reasoning` 或列表中的具体版本名。
+- 工具为 `x_search`。
+- `allowed_x_handles` 每批最多 10 个账号。
+- 本机 shell/curl 可能被失效代理环境影响。优先用 Python/urllib 或 Node fetch 安全解析 `.env` 中的 `XAI_API_KEY`，并在请求 xAI 前清理 `http_proxy`、`https_proxy`、`all_proxy`、`no_proxy`；如果 Python/Node `/v1/models` 返回 200，不要因为 curl 失败把 xAI 误判为不可用。
+- macOS 中 `curl` 不一定继承系统代理。调用 xAI 前先执行 `scutil --proxy`；如果 HTTPS/SOCKS 代理指向 `127.0.0.1:7890`，curl 必须显式增加 `-x http://127.0.0.1:7890`。如果直连 `/v1/models` 超时而代理请求成功，不要判定为额度不足。
+- 先跑 `/v1/models` 预检：返回 `200` 才继续 `x_search`；如果返回 `401/402/429`，按鉴权/余额/限流处理；如果是 `HTTP_STATUS:000`、`Connection reset`、`Timeout`，优先检查 DNS/代理。
+- Prompt 必须要求使用精确查询：`(from:账号1 OR from:账号2 ...) since:YYYY-MM-DD until:YYYY-MM-DD`，并且只输出监控账号，避免 Grok 扩展到非监控账号。
+- 两批账号：
+  - `Conflux_Network`, `Conflux_Intern`, `CamillaCaban`, `CikeinWeb3`, `SwappiDEX`, `OfficialNucleon`, `dForcenet`, `BitUnion_Card`, `Joyzinweb3`, `forgivenever`
+  - `estherinweb3`, `FanLong16`, `GuangYang_9`, `AnchorX_Ltd`, `HexbitApp`, `bxiaokang`
+- 如果代理预检和精确查询后 Grok 仍超时或无输出，写 `获取超时`，不要使用旧推文填充。
+- 即使 xAI 或 X 页面失败，推特舆情章节也必须保留 16 个监控账号的逐账号表格（账号、分类、最近动态/采集结果、来源状态），不能只输出三张 `获取超时` 汇总卡片。
 
-**如果用户明确要求高质量输出，执行评估-改进循环（最多 2 轮）：**
+新闻：
+- 联网检索最新 Conflux / CFX 新闻、官方博客、GitHub release。
+- 优先官方来源、GitHub release、可信媒体。
+- 输出必须带来源链接或在数据来源章节列明。
 
-```bash
-cd $CFX_PROJECT_DIR && npm run test:evaluator
+### Step 2: 生成简报
+
+输出路径：
+
+```text
+$CFX_PROJECT_DIR/reports/daily/CFX简报_YYYY-MM-DD.html
 ```
 
-评估器会返回 4 个维度的评分：
-- accuracy（准确性）≥ 8 分
-- depth（深度）≥ 6 分
-- clarity（清晰度）≥ 6 分
-- completeness（完整性）≥ 5 分
+可用 Python/TypeScript 组装 HTML，因为这是动态报告产物。不要用 Claude skill 中的 Bash heredoc 分段写入规则；那是 Claude 工具限制，不适用于 Codex。
 
-**如果未通过（任一维度低于阈值）：**
-1. 读取评估反馈
-2. 针对性改进（补充缺失数据、深化分析、优化表达）
-3. 重新生成 HTML
-4. 再次评估（最多 2 轮）
+同时尽量保存结构化证据文件，命名按日期落到 `reports/benchmarks/`：
 
-**如果通过或达到最大轮次：** 进入 Step 3
+- `cfx_live_collect_YYYY-MM-DD.json`：可获取的实时 API/网页数据汇总。
+- `cfx_briefing_data_YYYY-MM-DD.json`：最终进入报告的规范化数据快照。
+- `confluxhub_snapshot_YYYY-MM-DD.txt`：治理页面浏览器渲染快照。
+- `xai_twitter_refresh_YYYY-MM-DD.json`：xAI/X 舆情原始响应或失败预检。
+- `orderbook_top5_YYYY-MM-DD.json`、`whale_YYYY-MM-DD.json`、`axcnh_YYYY-MM-DD.json`：本地脚本结果。
 
-### Step 3: 打开简报 + 清理团队
+生成 HTML 后必须用浏览器打开本地文件并保存：
 
-```bash
-open $CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html
+```text
+$CFX_PROJECT_DIR/reports/daily/CFX简报_YYYY-MM-DD.png
+$CFX_PROJECT_DIR/reports/daily/CFX简报_YYYY-MM-DD.snapshot.txt
 ```
 
+如果截图或 snapshot 工具不可用，必须在最终报告和数据来源章节说明原因；不能把“HTML 已写入”当作完整完成。
+
+Markdown 请求 (`CFX --md`) 时输出：
+
+```text
+$CFX_PROJECT_DIR/reports/daily/CFX简报_YYYY-MM-DD.md
 ```
-TeamDelete()  # 清理团队资源
-```
 
-**Step 2/2.5 和 Step 3 之间不暂停，写完/评估完直接打开，打开后清理团队。**
+## HTML 10 个章节
 
-## HTML 9 章节
-
-1. **价格概览**: 当前价、成本 $0.26、浮亏%、回本涨幅%、24H/7D 涨跌
-2. **交易所盘口**: 4 交易所价格+涨跌+成交量（失败的标注"接口受限"）
-3. **治理投票**: Round 轮次、参数变更、投票进度、影响分析
-4. **巨鲸持仓**: Top10/20/50/100 占比 + 大户异动
-5. **链上数据**: TVL、Core/eSpace 账户数、AxCNH
-6. **推特舆情**: BULLISH/NEUTRAL/SILENT 三栏 + 每账号摘要
-7. **重大新闻**: 交易所上线、技术升级、合作、牌照
-8. **综合评估**: 利好因素 / 风险因素 / 操作建议 三栏
-9. **数据来源**: 列出所有 API 来源
+1. 价格概览：当前价、成本 `$0.26`、浮亏、回本涨幅、24H/7D/30D 涨跌、市值、成交量。
+2. 交易所盘口：Binance、OKX、Gate.io、MEXC，失败标注 `接口受限`。
+3. 治理投票：Round、截止时间、最低投票权、4 参数 Current / Coming Effective / In voting。
+4. 巨鲸持仓：Top10/20/50/100，占比来源，缓存或实时状态说明，重点地址解释。
+5. 链上数据：TVL、历史 TVL、Core/eSpace 账户增长、AxCNH。
+6. 推特舆情：BULLISH / NEUTRAL / SILENT 汇总，以及 16 个监控账号逐账号分类/状态；接口失败时逐账号标注 `获取超时` 或降级原因。
+7. 生态项目：AxCNH、XAUt0、USDT0/Unitus、Swappi、Nucleon、dForce、BitUnion、Hexbit、BSIM 的当前状态、催化强度和风险。
+8. 重大新闻：交易所、技术升级、合作、牌照、GitHub release、官方月报。
+9. 综合评估：利好因素、风险因素、操作建议。
+10. 数据来源：所有 API、网页、脚本、失败/降级状态。
 
 ## 计算公式
 
-```
+```text
 浮亏% = (price - 0.26) / 0.26 * 100
 回本涨幅% = (0.26 - price) / price * 100
 ```
 
-## 禁止
+## 写作风格
 
-- ❌ 在任何步骤暂停等待用户确认
-- ❌ 展示中间数据问"是否继续"
-- ❌ API 失败时问"要试备用方案吗"（直接试）
-- ❌ 跳过任何章节
-- ❌ 用占位符
-- ❌ 使用旧 Grok API（`/v1/chat/completions` 已弃用，必须用 `/v1/responses`）
+遵守 `modules/VOICE.md`：
+- 客观、专业、不过度营销。
+- 不使用「稳赚不赔」「百分百」「保证」「必然」「绝对」「肯定会」「一定」「确保」「无风险」等保证性词语。
+- 价格保留 4-6 位，百分比保留 1 位，大数使用 M/B 或千分位。
+- 明确区分实时数据、缓存数据、推断、失败降级。
 
-## 重点监控地址（2026-02-13更新）
+## 验证
 
-生成简报时，Agent 6（巨鲸持仓）应特别关注以下已识别地址的变动：
+生成后必须运行：
 
-### 地址 1: Binance Withdrawals 7（交易所提币热钱包）
-
-| 项目 | 详情 |
-|------|------|
-| **地址** | `0xe2fc31f816a9b94326492132018c3aecc4a93ae1` |
-| **身份** | Binance: Withdrawals 7（官方提币热钱包） |
-| **CoinCarp排名** | #22 |
-| **标签来源** | Etherscan 官方标签 |
-| **多链资产** | $191M（跨9条链） |
-| **BSC资产** | $3.87M BNB + $12.15M 代币 |
-| **BSC交易数** | 45.5M 笔 |
-| **资金来源** | Binance 51（内部调拨） |
-| **BSC持有bCFX** | 7,057,649 bCFX（$362,571） |
-
-**分析要点**：
-- 该地址的CFX减持 ≠ 鲸鱼抛售，而是用户从Binance提币（看涨信号）
-- 大量提币说明用户将CFX转入自托管钱包，减少交易所抛压
-- 监控此地址的7日变化可判断Binance用户的提币/充值趋势
-
-### 地址 2: cryptomoonwalker.bnb（冷存储积累者）
-
-| 项目 | 详情 |
-|------|------|
-| **地址** | `0x83da47ab9d850e2352edc200f172dbab39f66d84` |
-| **身份** | cryptomoonwalker.bnb 控制的冷存储钱包 |
-| **CoinCarp排名** | #27 |
-| **行为特征** | 纯积累，零卖出 |
-| **BSC持仓** | 2021-2022年购入的多种代币（SHIB、DOGE等） |
-| **Conflux持仓** | 新近积累，持续增持CFX |
-| **资金流向** | 单向：cryptomoonwalker.bnb → 此地址 |
-
-**分析要点**：
-- 典型的长期持有者行为，所有资金只进不出
-- BSC上的持仓模式显示该用户偏好在低位积累并长期持有
-- 持续增持CFX说明对项目有长期信心
-- 监控此地址的增持速度可判断聪明钱的态度
-
-### 简报输出要求
-
-在巨鲸持仓章节中，如果上述地址出现在7日变动排行中，应特别标注：
-
-```
-📌 已识别地址异动：
-- 0xe2fc...93ae1 (Binance提币钱包): [变动量] → [看涨/看跌解读]
-- 0x83da...66d84 (冷存储积累者): [变动量] → [持续积累/异常卖出]
+```bash
+test -f "$CFX_PROJECT_DIR/reports/daily/CFX简报_YYYY-MM-DD.html"
+rg -n "价格概览|交易所盘口|治理投票|巨鲸|链上数据|推特|生态项目|重大新闻|综合评估|数据来源" "$CFX_PROJECT_DIR/reports/daily/CFX简报_YYYY-MM-DD.html"
 ```
 
-## 用户背景
+必须执行质量闸门，任一失败先修 HTML 再重跑：
 
-- 成本: $0.26
-- 止盈: $0.15-0.18 卖 30%，$0.22-0.26 卖 40%，$0.30+ 卖剩余
+- H2 主章节必须恰好覆盖 10 节：价格概览、交易所盘口、治理投票、巨鲸持仓、链上数据、推特舆情、生态项目、重大新闻、综合评估、数据来源。
+- 价格公式必须按成本 `$0.26` 重新计算：`(price - 0.26) / 0.26` 和 `(0.26 - price) / price`。
+- 禁用词扫描必须通过：`稳赚不赔|百分百|保证|必然|绝对|肯定会|一定|确保|无风险`。
+- Secret 扫描必须通过：不要出现 `Bearer`、真实 key、`sk-...`、`.env` 内容或 API key 变量值。
+- 16 个 X 账号必须全部出现，并带账号、分类、动态/采集结果、来源状态。
+- 「生态项目」必须是独立章节，并覆盖 AxCNH、XAUt0、USDT0/Unitus、Swappi、Nucleon、dForce、BitUnion、Hexbit、BSIM。
+- 数据来源章节必须列出成功、降级、缓存、历史基准和失败状态，不能只列成功源。
+- 本地浏览器渲染、PNG 截图和 snapshot 必须成功；失败时必须写明工具/环境原因。
+- `reports/benchmarks/cfx_briefing_data_YYYY-MM-DD.json` 必须存在，并能回溯关键数字。
+- 如果今天有任何部分低于最近合格日报或 2026-05-16 基线，先修复，不要直接汇报完成。
 
-## Evals（质量评估测试）
+如果项目依赖可用，运行：
 
-> 基于 Anthropic skill-creator 博客的最佳实践，定义可验证的测试用例。
-> 运行方式：执行 `CFX` 后，按以下清单逐项检查。
-
-### Eval 1: HTML 结构完整性
-
-| 检查项 | 预期 | 判定 |
-|--------|------|------|
-| HTML 文件成功生成 | `$CFX_PROJECT_DIR/CFX简报_YYYY-MM-DD.html` 存在 | ✅/❌ |
-| 包含 9 个章节 | 价格/订单簿/治理/巨鲸/链上/推特/新闻/综合评估/数据来源 | ✅/❌ |
-| 浮亏%计算正确 | `(price - 0.26) / 0.26 * 100` | ✅/❌ |
-| 回本涨幅%计算正确 | `(0.26 - price) / price * 100` | ✅/❌ |
-| 自动打开浏览器 | HTML 在默认浏览器中展示 | ✅/❌ |
-
-### Eval 2: 并行架构合规性
-
-| 检查项 | 预期 | 判定 |
-|--------|------|------|
-| TeamCreate 被调用 | 团队名包含日期 | ✅/❌ |
-| 7 个 Agent 同时启动 | 在同一个 tool call 中派发 | ✅/❌ |
-| 主进程未直接 curl | 所有数据由子 Agent 获取 | ✅/❌ |
-| TeamDelete 执行 | 团队资源已清理 | ✅/❌ |
-
-### Eval 3: API 容错降级
-
-| 场景 | 预期行为 | 判定 |
-|------|----------|------|
-| CoinGecko 403 | 自动切换 DefiLlama 备用源 | ✅/❌ |
-| OKX API 超时 | 订单簿章节标注"接口受限"，不中断 | ✅/❌ |
-| Grok API 失败 | 推特舆情章节标注"⚠️ 获取超时" | ✅/❌ |
-| 治理页面加载失败 | 显示"当前无进行中的治理投票" | ✅/❌ |
-| 巨鲸数据获取失败 | WebSearch 备用方案自动执行 | ✅/❌ |
-
-### Eval 4: 零确认执行
-
-| 检查项 | 预期 | 判定 |
-|--------|------|------|
-| 全程无"是否继续"提问 | 从触发到完成零交互 | ✅/❌ |
-| 无中间数据展示等确认 | 数据直接进入 HTML 生成 | ✅/❌ |
-| API 失败自动降级 | 不询问备用方案 | ✅/❌ |
-
-### Eval 5: 触发准确性
-
-| 输入 | 应触发 | 不应触发 |
-|------|--------|----------|
-| `CFX` | ✅ | |
-| `cfx` | ✅ | |
-| `生成CFX简报` | ✅ | |
-| `Conflux简报` | ✅ | |
-| `CFX行情` | ✅ | |
-| `CFX --api` | ✅ | |
-| `CFX --md` | ✅ | |
-| `今日CFX` | ✅ | |
-| `CFX市场分析` | ✅ | |
-| `Conflux的技术架构是什么` | | ✅ |
-| `帮我写一个CFX的智能合约` | | ✅ |
-| `CFX代码有bug` | | ✅ |
-
-## Benchmark（性能基准追踪）
-
-> 每次运行后记录到 `$CFX_PROJECT_DIR/benchmarks/YYYY-MM-DD.json`
-
-### 追踪指标
-
-```json
-{
-  "date": "YYYY-MM-DD",
-  "total_time_seconds": 0,
-  "agent_times": {
-    "agent-1-price": 0,
-    "agent-2-orderbook": 0,
-    "agent-3-twitter": 0,
-    "agent-4-onchain": 0,
-    "agent-5-governance": 0,
-    "agent-6-whale": 0,
-    "agent-7-news": 0
-  },
-  "api_success_rate": {
-    "coingecko": true,
-    "binance": true,
-    "okx": true,
-    "gate": true,
-    "mexc": true,
-    "grok": true,
-    "confluxscan_core": true,
-    "confluxscan_espace": true,
-    "defillama": true,
-    "coincarp": true
-  },
-  "html_sections_complete": 9,
-  "eval_pass_rate": "5/5"
-}
+```bash
+npm run test:evaluator
 ```
 
-### 性能目标
+运行 evaluator 前先预检 `node_modules/.bin/tsx`、`@anthropic-ai/sdk`、`test-evaluator.ts`、`agents/cfx-briefing-evaluator.ts` 或对应 `.js`。如果评估器失败，先读失败原因；能修就修，不能修就在最终报告中说明。
 
-| 指标 | 目标 | 告警阈值 |
-|------|------|----------|
-| 总执行时间 | < 180s | > 300s |
-| 并行效率 | 7 Agent 同时启动 | 串行降级 |
-| API 成功率 | ≥ 70%（7/10 源） | < 50% |
-| HTML 章节完整率 | 9/9 | < 7/9 |
+## 最终报告
 
-### Benchmark 执行（可选）
-
-在 SKILL 执行完成后，自动在 `$CFX_PROJECT_DIR/benchmarks/` 写入当次 JSON 记录。
-不阻塞主流程，如果目录不存在则自动创建。
-
-## Skill 类型声明
-
-> 参考 Anthropic 博客的 skill 分类框架
-
-**类型**: Encoded Preference（流程编码型）
-- 本 skill 编码了特定的投资分析工作流（7 数据源 → 9 章节 HTML）
-- 模型能力提升不会使本 skill 过时，因为核心价值在于特定的数据源组合和分析框架
-- 需要定期验证：API 端点变更、推特账号变动、生态项目更新
-
+最终回复包含：
+- 生成的文件路径。
+- PNG 截图路径和关键 benchmark 路径。
+- 关键数据摘要。
+- 降级项和失败项。
+- 已运行的验证。
+- 明确说明是否达到最近合格日报 / 2026-05-16 基线。
+- 不要说调用了 Claude Code；本 skill 禁止调用 Claude Code。

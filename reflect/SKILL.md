@@ -49,7 +49,7 @@ For each finding, determine the best action:
 | User preference revealed | Save to MEMORY.md |
 | Reusable workflow discovered | Create a new skill |
 | Existing skill was wrong | Update the skill |
-| CLAUDE.md instruction was unclear | Clarify the instruction |
+| AGENTS.md instruction was unclear | Clarify the instruction |
 
 ## Step 4: Execute Improvements
 
@@ -61,7 +61,7 @@ For each action:
 ```
 
 **Create new skill** (reusable workflow):
-- Create `~/.claude/skills/[skill-name]/SKILL.md`
+- Create `~/.Codex/skills/[skill-name]/SKILL.md`
 - Include: trigger conditions, step-by-step instructions, examples
 
 **Update existing skill** (fix or improve):

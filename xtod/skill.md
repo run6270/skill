@@ -13,7 +13,7 @@ description: Twitter/X 推文阅读和文档生成工具。严格按照用户指
 - ✅ 主会话只接收最终的 JSON 数据
 - ✅ 主会话 token 消耗 < 10k
 
-## 执行流程（Claude 必须严格遵循）
+## 执行流程（Codex 必须严格遵循）
 
 当用户请求使用 xtod skill 时，**必须**按照以下步骤执行：
 
@@ -354,7 +354,7 @@ else:
 
 ```python
 # 读取 document_generator.py
-exec(open('/Users/mac/.claude/skills/xtod/document_generator.py').read())
+exec(open('/Users/mac/.Codex/skills/xtod/document_generator.py').read())
 
 # 生成文档
 output_filename = f"Twitter_{tweets_data['author']['name']}_{{format}}.{{format}}"

@@ -31,7 +31,7 @@ Use this skill when:
 Create a YAML config file defining your API sources:
 
 ```yaml
-# ~/.claude/api-configs/crypto-prices.yaml
+# ~/.Codex/api-configs/crypto-prices.yaml
 name: "Crypto Price Aggregator"
 description: "Fetch CFX price from multiple exchanges"
 
@@ -92,7 +92,7 @@ User: "Call these APIs in parallel:
 Determine which method the user is using:
 
 **If config file mentioned:**
-- Look for config in `~/.claude/api-configs/`
+- Look for config in `~/.Codex/api-configs/`
 - Parse YAML/JSON to extract API definitions
 - Validate all required fields are present
 
@@ -339,7 +339,7 @@ When some APIs succeed and others fail:
 1. **Always return successful data** - Don't fail completely if 1/3 APIs work
 2. **Report failures clearly** - Show which APIs failed and why
 3. **Suggest fallbacks** - If primary source fails, highlight alternatives
-4. **Log for debugging** - Save full error details to `~/.claude/logs/api-aggregator.log`
+4. **Log for debugging** - Save full error details to `~/.Codex/logs/api-aggregator.log`
 
 ## Advanced Features
 
@@ -359,7 +359,7 @@ def cache_key(api_config):
 
 def get_cached(cache_key, max_age=300):
     """Get cached response if not expired (default: 5 minutes)"""
-    cache_file = f"~/.claude/cache/api-{cache_key}.json"
+    cache_file = f"~/.Codex/cache/api-{cache_key}.json"
     if os.path.exists(cache_file):
         with open(cache_file) as f:
             cached = json.load(f)
@@ -403,7 +403,7 @@ apis:
 
 ### Use Case 1: CFX Investment Briefing
 
-**Config file:** `~/.claude/api-configs/cfx-briefing.yaml`
+**Config file:** `~/.Codex/api-configs/cfx-briefing.yaml`
 
 ```yaml
 name: "CFX Briefing Data Sources"

@@ -1,16 +1,16 @@
 ---
 name: project-context-sync
-description: Automatically sync project context to CLAUDE.md and analyze tech stack. Use this skill whenever the user mentions "sync project", "update CLAUDE.md", "analyze this project", "what tech stack", "check dependencies", switches to a new project directory, or wants to understand the current codebase structure. Also trigger when the user asks about project setup, configuration, or wants a project overview.
+description: Automatically sync project context to AGENTS.md and analyze tech stack. Use this skill whenever the user mentions "sync project", "update AGENTS.md", "analyze this project", "what tech stack", "check dependencies", switches to a new project directory, or wants to understand the current codebase structure. Also trigger when the user asks about project setup, configuration, or wants a project overview.
 ---
 
 # Project Context Sync
 
-Automatically analyze a project's structure, detect its tech stack and dependencies, then update CLAUDE.md and generate a comprehensive project report.
+Automatically analyze a project's structure, detect its tech stack and dependencies, then update AGENTS.md and generate a comprehensive project report.
 
 ## When to Use
 
 Use this skill when:
-- User explicitly asks to "sync project context" or "update CLAUDE.md"
+- User explicitly asks to "sync project context" or "update AGENTS.md"
 - User switches to a new project and wants to understand it
 - User asks "what's this project about?" or "what tech stack does this use?"
 - User wants to check dependencies or project configuration
@@ -20,7 +20,7 @@ Use this skill when:
 
 1. **Scans the project** - Analyzes file structure, package files, config files
 2. **Detects tech stack** - Identifies languages, frameworks, tools, and dependencies
-3. **Updates CLAUDE.md** - Creates or updates the project's CLAUDE.md with essential context
+3. **Updates AGENTS.md** - Creates or updates the project's AGENTS.md with essential context
 4. **Generates report** - Creates a detailed analysis report for reference
 
 ## Workflow
@@ -57,7 +57,7 @@ Analyze the project by examining:
 - `README.md` - Project description
 - `CONTRIBUTING.md` - Contribution guidelines
 - `docs/` directory - Additional documentation
-- Existing `CLAUDE.md` - Previous context
+- Existing `AGENTS.md` - Previous context
 
 **Code Structure**:
 - Main source directories (`src/`, `lib/`, `app/`, etc.)
@@ -96,9 +96,9 @@ From the scanned files, extract:
 - Common development commands (dev, build, test, lint)
 - Deployment commands
 
-### Step 4: Update CLAUDE.md
+### Step 4: Update AGENTS.md
 
-Create or update `CLAUDE.md` in the project root with this structure:
+Create or update `AGENTS.md` in the project root with this structure:
 
 ```markdown
 # [Project Name]
@@ -154,10 +154,10 @@ Notable dependencies: [list 5-10 most important ones]
 
 **Important Guidelines**:
 - Keep it concise - aim for 100-200 lines max
-- Focus on information that helps Claude understand the project quickly
+- Focus on information that helps Codex understand the project quickly
 - Include file paths for key configuration files
 - Highlight any unusual patterns or project-specific conventions
-- If CLAUDE.md already exists, preserve user-written sections and only update auto-generated parts
+- If AGENTS.md already exists, preserve user-written sections and only update auto-generated parts
 
 ### Step 5: Generate Analysis Report
 
@@ -188,7 +188,7 @@ Create a detailed report at `docs/project-analysis-[date].md` with:
 
 Show the user:
 1. A summary of what was detected
-2. Path to the updated CLAUDE.md
+2. Path to the updated AGENTS.md
 3. Path to the detailed analysis report
 4. Any warnings or issues found
 
@@ -201,7 +201,7 @@ Example output:
 - Framework: Next.js 14.1
 - 47 production dependencies, 23 dev dependencies
 
-📝 Updated: /path/to/project/CLAUDE.md
+📝 Updated: /path/to/project/AGENTS.md
 📄 Report: /path/to/project/docs/project-analysis-2026-03-04.md
 
 ⚠️ Notes:
@@ -212,14 +212,14 @@ Example output:
 ## Edge Cases
 
 **No package files found**:
-- Still analyze file structure and create basic CLAUDE.md
+- Still analyze file structure and create basic AGENTS.md
 - Note in the report that dependency detection was not possible
 
 **Multiple tech stacks** (e.g., monorepo):
 - Detect all stacks and list them separately
-- Ask user which one to focus on for CLAUDE.md
+- Ask user which one to focus on for AGENTS.md
 
-**Existing CLAUDE.md with user content**:
+**Existing AGENTS.md with user content**:
 - Preserve sections that don't look auto-generated
 - Add a comment marking auto-generated sections
 - Offer to show diff before overwriting
@@ -240,7 +240,7 @@ Example output:
 ## Example Usage
 
 **User**: "Sync this project's context"
-**Action**: Analyze current directory, update CLAUDE.md, generate report
+**Action**: Analyze current directory, update AGENTS.md, generate report
 
 **User**: "What tech stack does this use?"
 **Action**: Quick scan and report tech stack without full sync

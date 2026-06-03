@@ -128,5 +128,5 @@
 
 | 格式 | 路径 |
 |------|------|
-| HTML | `/Users/mac/Documents/GitHub/CFX-DWF行情/简报/CFX简报_YYYY-MM-DD.html` |
-| Markdown | `/Users/mac/Documents/GitHub/CFX-DWF行情/简报历史/CFX简报_YYYY-MM-DD_HHMM.md` |
+| HTML | `/Users/mac/Documents/GitHub/CFX-DWF行情/reports/daily/CFX简报_YYYY-MM-DD.html` |
+| Markdown | `/Users/mac/Documents/GitHub/CFX-DWF行情/reports/daily/CFX简报_YYYY-MM-DD_HHMM.md` |

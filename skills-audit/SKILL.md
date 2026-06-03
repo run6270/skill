@@ -1,6 +1,6 @@
 ---
 name: skills-audit
-description: Audits all installed Claude Code skills (project-level and global) for quality issues. Use when user asks to audit skills, review skill quality, or check for redundancy.
+description: Audits all installed Codex skills (project-level and global) for quality issues. Use when user asks to audit skills, review skill quality, or check for redundancy.
 allowed-tools: Bash, Read, Glob
 ---
 
@@ -12,10 +12,10 @@ List and audit all installed skills for quality issues.
 
 ```bash
 # Global skills
-ls ~/.claude/skills/
+ls ~/.Codex/skills/
 
 # Project skills (if in a project)
-ls .claude/skills/ 2>/dev/null || echo "(no project skills)"
+ls .Codex/skills/ 2>/dev/null || echo "(no project skills)"
 ```
 
 ## Step 2: Present Skill List to User

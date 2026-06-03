@@ -1,0 +1,1 @@
+{"_schema": "metric", "_version": "1.0", "_description": "CFX价格和交易量历史", "_fields": {"timestamp": "ISO8601", "price": "number", "change_24h": "number", "change_7d": "number", "market_cap": "number", "volume_24h": "number", "circulating_supply": "number", "tvl": "number", "exchange_data": [{"exchange": "string", "price": "number", "volume": "number", "status": "ok|limited"}]}}

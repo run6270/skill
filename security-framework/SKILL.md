@@ -1,11 +1,11 @@
 ---
 name: security-framework
-description: Three-tier defense architecture for Claude Code with red/yellow line command classification and behavioral self-inspection
+description: Three-tier defense architecture for Codex with red/yellow line command classification and behavioral self-inspection
 ---
 
 # Security Framework - Three-Tier Defense Architecture
 
-This skill implements a comprehensive security framework inspired by OpenClaw Security Practice Guide, adapted for Claude Code.
+This skill implements a comprehensive security framework inspired by OpenClaw Security Practice Guide, adapted for Codex.
 
 ## 🎯 Core Principles
 
@@ -26,7 +26,7 @@ This skill implements a comprehensive security framework inspired by OpenClaw Se
 - Modifying `~/.ssh/authorized_keys`
 - Modifying `~/.ssh/config`
 - Modifying `/etc/ssh/sshd_config`
-- Modifying `.claude/` authentication files
+- Modifying `.Codex/` authentication files
 - Modifying `.git/config` (credential sections)
 
 ### Sensitive Data Exfiltration
@@ -54,8 +54,8 @@ This skill implements a comprehensive security framework inspired by OpenClaw Se
 - This prevents Supply Chain Poisoning
 
 ### Permission Tampering
-- `chmod`/`chown` targeting core files under `.claude/`
-- Modifying `.claude/settings.json` permissions
+- `chmod`/`chown` targeting core files under `.Codex/`
+- Modifying `.Codex/settings.json` permissions
 
 ## 🟡 Yellow Line Commands (Executable, but MUST be recorded in memory)
 
@@ -65,7 +65,7 @@ This skill implements a comprehensive security framework inspired by OpenClaw Se
 - `iptables` / `ufw` rule changes
 - `systemctl restart/start/stop` (known services)
 - Git destructive operations: `git reset --hard`, `git push --force`
-- Modifying `.claude/` configuration files
+- Modifying `.Codex/` configuration files
 
 ## 🛡️ Behavioral Self-Inspection Protocol
 
@@ -92,7 +92,7 @@ Execute normally
 
 ## 📝 Yellow Line Logging Format
 
-When executing yellow line commands, log to `~/.claude/projects/-Users-mac-Documents-GitHub/memory/YYYY-MM-DD.md`:
+When executing yellow line commands, log to `~/.Codex/projects/-Users-mac-Documents-GitHub/memory/YYYY-MM-DD.md`:
 
 ```markdown
 ## Yellow Line Operations - YYYY-MM-DD
@@ -119,13 +119,13 @@ Example:
 ```
 ⚠️ RED LINE DETECTED
 
-Command: `rm -rf ~/.claude/`
+Command: `rm -rf ~/.Codex/`
 
 Risk Level: CRITICAL
-Consequences: Complete loss of Claude Code configuration, memory, and settings
+Consequences: Complete loss of Codex configuration, memory, and settings
 
 Safer alternatives:
-- Backup first: `cp -r ~/.claude ~/.claude.backup`
+- Backup first: `cp -r ~/.Codex ~/.Codex.backup`
 - Selective deletion: Specify exact files to remove
 
 Do you want to proceed with this destructive operation?
@@ -145,13 +145,13 @@ When installing skills, MCPs, or third-party tools:
 
 ## 🎯 Usage
 
-This skill is **automatically active** for all Claude Code sessions. You don't need to invoke it manually.
+This skill is **automatically active** for all Codex sessions. You don't need to invoke it manually.
 
 ### For Users
 
 - Red line commands will trigger confirmation dialogs
 - Yellow line commands are logged automatically
-- Check `~/.claude/projects/-Users-mac-Documents-GitHub/memory/` for operation logs
+- Check `~/.Codex/projects/-Users-mac-Documents-GitHub/memory/` for operation logs
 
 ### For Developers
 
@@ -177,5 +177,5 @@ ls -la
 ## 📚 References
 
 - Based on: [OpenClaw Security Practice Guide](https://github.com/slowmist/openclaw-security-practice-guide)
-- Adapted for: Claude Code environment
+- Adapted for: Codex environment
 - Version: 1.0.0

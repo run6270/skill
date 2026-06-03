@@ -1,6 +1,6 @@
 ---
 name: nightly-audit
-description: Automated nightly security audit for Claude Code - 13 core metrics with explicit reporting and Git backup
+description: Automated nightly security audit for Codex - 13 core metrics with explicit reporting and Git backup
 ---
 
 # Nightly Security Audit
@@ -13,7 +13,7 @@ Detect security anomalies, configuration tampering, and credential leaks through
 
 ## 📊 13 Core Metrics
 
-### 1. Claude Code Security Audit
+### 1. Codex Security Audit
 - Configuration integrity
 - Permission settings
 - Trust model validation
@@ -25,7 +25,7 @@ Detect security anomalies, configuration tampering, and credential leaks through
 
 ### 3. Sensitive Directory Changes
 Files modified in last 24h:
-- `~/.claude/`
+- `~/.Codex/`
 - `~/.ssh/`
 - `~/.gnupg/`
 - `/etc/` (if accessible)
@@ -81,7 +81,7 @@ Regex scan for:
 - Validate memory size and growth
 
 ### 13. Git Backup
-- Incremental commit of `.claude/` directory
+- Incremental commit of `.Codex/` directory
 - Push to private repository
 - Verify backup success
 
@@ -129,7 +129,7 @@ ghp_[a-zA-Z0-9]{36}
 ## 📝 Audit Report Format
 
 ```markdown
-🛡️ Claude Code Daily Security Audit Report (YYYY-MM-DD)
+🛡️ Codex Daily Security Audit Report (YYYY-MM-DD)
 
 1. Platform Audit: ✅ Configuration validated
 2. Process & Network: ✅ No anomalous connections
@@ -145,7 +145,7 @@ ghp_[a-zA-Z0-9]{36}
 12. Memory Audit: ✅ No sensitive data leaks
 13. Git Backup: ✅ Pushed to private repo
 
-📝 Detailed report: ~/.claude/security-reports/report-YYYY-MM-DD.txt
+📝 Detailed report: ~/.Codex/security-reports/report-YYYY-MM-DD.txt
 ```
 
 ## 🚨 Alert Levels
@@ -176,7 +176,7 @@ ghp_[a-zA-Z0-9]{36}
 
 The audit is implemented as a shell script at:
 ```
-~/.claude/workspace/scripts/nightly-security-audit.sh
+~/.Codex/workspace/scripts/nightly-security-audit.sh
 ```
 
 ### Script Structure
@@ -184,9 +184,9 @@ The audit is implemented as a shell script at:
 #!/bin/bash
 
 # Configuration
-CLAUDE_DIR="${HOME}/.claude"
-REPORT_DIR="${HOME}/.claude/security-reports"
-BACKUP_REPO="git@github.com:username/claude-backup.git"
+CLAUDE_DIR="${HOME}/.Codex"
+REPORT_DIR="${HOME}/.Codex/security-reports"
+BACKUP_REPO="git@github.com:username/Codex-backup.git"
 DATE=$(date +%Y-%m-%d)
 REPORT_FILE="${REPORT_DIR}/report-${DATE}.txt"
 
@@ -194,7 +194,7 @@ REPORT_FILE="${REPORT_DIR}/report-${DATE}.txt"
 mkdir -p "${REPORT_DIR}"
 
 # Initialize report
-echo "🛡️ Claude Code Security Audit - ${DATE}" > "${REPORT_FILE}"
+echo "🛡️ Codex Security Audit - ${DATE}" > "${REPORT_FILE}"
 echo "========================================" >> "${REPORT_FILE}"
 
 # 1. Platform Audit
@@ -231,14 +231,14 @@ cat "${REPORT_FILE}"
 
 1. Create the audit script:
 ```bash
-mkdir -p ~/.claude/workspace/scripts
-# Copy script content to ~/.claude/workspace/scripts/nightly-security-audit.sh
-chmod +x ~/.claude/workspace/scripts/nightly-security-audit.sh
+mkdir -p ~/.Codex/workspace/scripts
+# Copy script content to ~/.Codex/workspace/scripts/nightly-security-audit.sh
+chmod +x ~/.Codex/workspace/scripts/nightly-security-audit.sh
 ```
 
 2. Test the script manually:
 ```bash
-bash ~/.claude/workspace/scripts/nightly-security-audit.sh
+bash ~/.Codex/workspace/scripts/nightly-security-audit.sh
 ```
 
 3. Add to crontab:
@@ -246,16 +246,16 @@ bash ~/.claude/workspace/scripts/nightly-security-audit.sh
 crontab -e
 
 # Add this line (runs at 3:00 AM daily)
-0 3 * * * bash ~/.claude/workspace/scripts/nightly-security-audit.sh
+0 3 * * * bash ~/.Codex/workspace/scripts/nightly-security-audit.sh
 ```
 
-### Alternative: Using Claude Code Cron (if available)
+### Alternative: Using Codex Cron (if available)
 ```bash
-claude-code cron add \
+Codex cron add \
   --name "nightly-security-audit" \
   --description "Nightly Security Audit" \
   --cron "0 3 * * *" \
-  --command "bash ~/.claude/workspace/scripts/nightly-security-audit.sh"
+  --command "bash ~/.Codex/workspace/scripts/nightly-security-audit.sh"
 ```
 
 ## 🔔 Notification Options
@@ -263,7 +263,7 @@ claude-code cron add \
 ### Option 1: Email
 ```bash
 # Add to end of audit script
-mail -s "Claude Code Security Audit - ${DATE}" user@example.com < "${REPORT_FILE}"
+mail -s "Codex Security Audit - ${DATE}" user@example.com < "${REPORT_FILE}"
 ```
 
 ### Option 2: Telegram
@@ -295,19 +295,19 @@ curl -X POST "${SLACK_WEBHOOK}" \
 
 1. Create private GitHub repository:
 ```bash
-# On GitHub: Create new private repo "claude-backup"
+# On GitHub: Create new private repo "Codex-backup"
 ```
 
-2. Initialize Git in `.claude/` directory:
+2. Initialize Git in `.Codex/` directory:
 ```bash
-cd ~/.claude
+cd ~/.Codex
 git init
-git remote add origin git@github.com:username/claude-backup.git
+git remote add origin git@github.com:username/Codex-backup.git
 ```
 
 3. Create `.gitignore`:
 ```bash
-cat > ~/.claude/.gitignore << 'EOF'
+cat > ~/.Codex/.gitignore << 'EOF'
 # Exclude large/temporary files
 devices/*.tmp
 media/
@@ -322,7 +322,7 @@ EOF
 4. Initial commit:
 ```bash
 git add -A
-git commit -m "Initial Claude Code backup"
+git commit -m "Initial Codex backup"
 git push -u origin main
 ```
 
@@ -333,11 +333,11 @@ git push -u origin main
 Generate initial baselines:
 ```bash
 # Configuration hash baseline
-sha256sum ~/.claude/settings.json > ~/.claude/.config-baseline.sha256
+sha256sum ~/.Codex/settings.json > ~/.Codex/.config-baseline.sha256
 
 # Skill/MCP baseline
-find ~/.claude/skills -type f -exec sha256sum {} \; > ~/.claude/.skill-baseline.sha256
-find ~/.claude/mcp -type f -exec sha256sum {} \; >> ~/.claude/.skill-baseline.sha256
+find ~/.Codex/skills -type f -exec sha256sum {} \; > ~/.Codex/.skill-baseline.sha256
+find ~/.Codex/mcp -type f -exec sha256sum {} \; >> ~/.Codex/.skill-baseline.sha256
 ```
 
 ## 🧪 Validation
@@ -345,13 +345,13 @@ find ~/.claude/mcp -type f -exec sha256sum {} \; >> ~/.claude/.skill-baseline.sh
 ### Test Audit Script
 ```bash
 # Run manually
-bash ~/.claude/workspace/scripts/nightly-security-audit.sh
+bash ~/.Codex/workspace/scripts/nightly-security-audit.sh
 
 # Check report
-cat ~/.claude/security-reports/report-$(date +%Y-%m-%d).txt
+cat ~/.Codex/security-reports/report-$(date +%Y-%m-%d).txt
 
 # Verify all 13 metrics are present
-grep -c "✅\|⚠️\|❌" ~/.claude/security-reports/report-$(date +%Y-%m-%d).txt
+grep -c "✅\|⚠️\|❌" ~/.Codex/security-reports/report-$(date +%Y-%m-%d).txt
 # Should output: 13
 ```
 
@@ -361,7 +361,7 @@ grep -c "✅\|⚠️\|❌" ~/.claude/security-reports/report-$(date +%Y-%m-%d).t
 echo "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" > /tmp/test-key.txt
 
 # Run DLP scan
-grep -r "0x[a-fA-F0-9]\{64\}" ~/.claude/
+grep -r "0x[a-fA-F0-9]\{64\}" ~/.Codex/
 
 # Should detect the test pattern
 ```
@@ -379,10 +379,10 @@ grep -r "0x[a-fA-F0-9]\{64\}" ~/.claude/
 ### Update Audit Script
 ```bash
 # Edit script
-vim ~/.claude/workspace/scripts/nightly-security-audit.sh
+vim ~/.Codex/workspace/scripts/nightly-security-audit.sh
 
 # Test changes
-bash ~/.claude/workspace/scripts/nightly-security-audit.sh
+bash ~/.Codex/workspace/scripts/nightly-security-audit.sh
 
 # Verify cron still works
 crontab -l
@@ -391,13 +391,13 @@ crontab -l
 ### Review Historical Reports
 ```bash
 # List all reports
-ls -lh ~/.claude/security-reports/
+ls -lh ~/.Codex/security-reports/
 
 # View specific report
-cat ~/.claude/security-reports/report-2026-03-01.txt
+cat ~/.Codex/security-reports/report-2026-03-01.txt
 
 # Search for alerts
-grep -r "⚠️\|❌" ~/.claude/security-reports/
+grep -r "⚠️\|❌" ~/.Codex/security-reports/
 ```
 
 ## 📚 Integration

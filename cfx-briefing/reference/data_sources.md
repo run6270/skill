@@ -167,20 +167,28 @@ def calculate_depth(orderbook, current_price, depth_percent=10):
 |--------|-----|
 | **API Key位置** | `.env` 文件中的 `XAI_API_KEY` |
 | **Endpoint** | `https://api.x.ai/v1/responses` |
-| **模型** | `grok-4-1-fast` |
+| **模型** | `grok-4-1-fast-reasoning` |
 | **搜索工具** | `tools: [{"type": "x_search"}]` |
+| **代理** | macOS 系统代理若为 `127.0.0.1:7890`，curl 显式使用 `-x http://127.0.0.1:7890` |
 
 ### 调用命令（自动执行）
 
 ```bash
-# 先读取API Key
-cat /Users/mac/Documents/GitHub/CFX-DWF行情/.env
+# 只加载 API Key，不打印 .env
+set -a
+. /Users/mac/Documents/GitHub/CFX-DWF行情/.env
+set +a
+
+# 预检：先确认 key、模型和网络通路
+curl -x http://127.0.0.1:7890 -sS \
+  -H "Authorization: Bearer $XAI_API_KEY" \
+  https://api.x.ai/v1/models
 
 # 新API调用（分批，每批最多10个账号）
-export XAI_API_KEY="key值" && curl -s -X POST 'https://api.x.ai/v1/responses' \
+curl -x http://127.0.0.1:7890 -sS -X POST 'https://api.x.ai/v1/responses' \
   -H "Authorization: Bearer $XAI_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"model":"grok-4-1-fast","input":[{"role":"user","content":"英文Prompt..."}],"tools":[{"type":"x_search","allowed_x_handles":["账号1","账号2"]}]}'
+  -d '{"model":"grok-4-1-fast-reasoning","input":[{"role":"user","content":"Use x_search once with this exact query: (from:账号1 OR from:账号2) since:YYYY-MM-DD until:YYYY-MM-DD. Classify only these handles and return compact JSON."}],"tools":[{"type":"x_search","allowed_x_handles":["账号1","账号2"]}]}'
 ```
 
 ### 关键参数
@@ -188,6 +196,7 @@ export XAI_API_KEY="key值" && curl -s -X POST 'https://api.x.ai/v1/responses' \
 | 参数 | 值 | 说明 |
 |------|-----|------|
 | `allowed_x_handles` | 最多10个 | 超过需分批请求 |
+| `from:... OR from:...` | 必填 | 防止 Grok 扩展到非监控账号 |
 | 响应字段 | `output[].content[].text` | 文本内容 |
 | 注释字段 | `annotations` | 引用来源 |
 | Prompt语言 | **英文** | 中文会返回过时数据！ |

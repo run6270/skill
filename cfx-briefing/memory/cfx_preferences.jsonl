@@ -1,0 +1,1 @@
+{"_schema": "preference", "_version": "1.0", "_description": "用户偏好设置", "_fields": {"preference_id": "string", "category": "display|analysis|notification|risk", "key": "string", "value": "any", "updated_at": "ISO8601", "reason": "string"}}

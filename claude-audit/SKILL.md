@@ -1,27 +1,27 @@
 ---
-name: claude-audit
-description: Audits all CLAUDE.md files for redundancy, verbosity, and optimization opportunities. Use when user asks to audit CLAUDE.md, clean up instructions, or optimize Claude configuration.
+name: Codex-audit
+description: Audits all AGENTS.md files for redundancy, verbosity, and optimization opportunities. Use when user asks to audit AGENTS.md, clean up instructions, or optimize Codex configuration.
 allowed-tools: Bash, Read, Glob
 ---
 
-# Claude Audit
+# Codex Audit
 
-Read and audit all CLAUDE.md files in the system.
+Read and audit all AGENTS.md files in the system.
 
-## Step 1: Discover All CLAUDE.md Files
+## Step 1: Discover All AGENTS.md Files
 
 ```bash
 # Global
-cat ~/.claude/CLAUDE.md
+cat ~/.Codex/AGENTS.md
 
 # Global rules
-ls ~/.claude/rules/
+ls ~/.Codex/rules/
 
 # Project-level
-find . -name "CLAUDE.md" -not -path "*/node_modules/*" 2>/dev/null
+find . -name "AGENTS.md" -not -path "*/node_modules/*" 2>/dev/null
 
 # Memory
-cat ~/.claude/projects/*/memory/MEMORY.md 2>/dev/null
+cat ~/.Codex/projects/*/memory/MEMORY.md 2>/dev/null
 ```
 
 ## Step 2: Read All Files
@@ -31,7 +31,7 @@ Read each discovered file completely.
 ## Step 3: Audit Each File
 
 ### Check for Redundant Instructions
-- Instructions that duplicate default Claude behavior
+- Instructions that duplicate default Codex behavior
 - Instructions repeated across multiple files
 - Instructions that contradict each other
 
@@ -41,8 +41,8 @@ Read each discovered file completely.
 - Sections that could be merged
 
 ### Check for Misplaced Content
-- Content that belongs in a skill instead of CLAUDE.md
-- Content that belongs in MEMORY.md instead of CLAUDE.md
+- Content that belongs in a skill instead of AGENTS.md
+- Content that belongs in MEMORY.md instead of AGENTS.md
 - Project-specific content in global files
 
 ### Check for Stale Content

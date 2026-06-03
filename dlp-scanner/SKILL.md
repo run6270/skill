@@ -1,6 +1,6 @@
 ---
 name: dlp-scanner
-description: Data Loss Prevention scanner - detects plaintext credentials, private keys, and sensitive data in Claude Code workspace
+description: Data Loss Prevention scanner - detects plaintext credentials, private keys, and sensitive data in Codex workspace
 ---
 
 # DLP Scanner - Data Loss Prevention
@@ -130,19 +130,19 @@ pk_live_[0-9a-zA-Z]{24,}
 ## 📂 Scan Locations
 
 ### High Priority (Always Scan)
-- `~/.claude/projects/*/memory/` - Conversation memory
-- `~/.claude/workspace/` - Working files
-- `~/.claude/logs/` - Log files
-- `~/.claude/agents/*/sessions/` - Agent session data
+- `~/.Codex/projects/*/memory/` - Conversation memory
+- `~/.Codex/workspace/` - Working files
+- `~/.Codex/logs/` - Log files
+- `~/.Codex/agents/*/sessions/` - Agent session data
 
 ### Medium Priority (Scan if Suspicious)
-- `~/.claude/skills/` - Installed skills
-- `~/.claude/mcp/` - MCP server configurations
-- `~/.claude/cron/` - Scheduled task definitions
+- `~/.Codex/skills/` - Installed skills
+- `~/.Codex/mcp/` - MCP server configurations
+- `~/.Codex/cron/` - Scheduled task definitions
 
 ### Low Priority (Scan on Demand)
-- `~/.claude/completions/` - Shell completions
-- `~/.claude/canvas/` - Canvas artifacts
+- `~/.Codex/completions/` - Shell completions
+- `~/.Codex/canvas/` - Canvas artifacts
 
 ## 🚨 Alert Levels
 
@@ -194,9 +194,9 @@ pk_live_[0-9a-zA-Z]{24,}
 ```bash
 #!/bin/bash
 
-# DLP Scanner for Claude Code
-CLAUDE_DIR="${HOME}/.claude"
-REPORT_FILE="${HOME}/.claude/security-reports/dlp-scan-$(date +%Y-%m-%d-%H%M%S).txt"
+# DLP Scanner for Codex
+CLAUDE_DIR="${HOME}/.Codex"
+REPORT_FILE="${HOME}/.Codex/security-reports/dlp-scan-$(date +%Y-%m-%d-%H%M%S).txt"
 
 echo "🔍 DLP Scan Started - $(date)" > "${REPORT_FILE}"
 echo "======================================" >> "${REPORT_FILE}"
@@ -245,13 +245,13 @@ cat "${REPORT_FILE}"
 #### Manual Scan
 ```bash
 # Run full scan
-bash ~/.claude/workspace/scripts/dlp-scan.sh
+bash ~/.Codex/workspace/scripts/dlp-scan.sh
 
 # Scan specific directory
-grep -r -E "0x[a-fA-F0-9]{64}" ~/.claude/projects/*/memory/
+grep -r -E "0x[a-fA-F0-9]{64}" ~/.Codex/projects/*/memory/
 
 # Scan specific file
-grep -E "sk-[a-zA-Z0-9]{48}" ~/.claude/workspace/file.txt
+grep -E "sk-[a-zA-Z0-9]{48}" ~/.Codex/workspace/file.txt
 ```
 
 #### Automated Scan (via nightly-audit)
@@ -299,10 +299,10 @@ credentials.json
 Regularly clear sensitive data from memory:
 ```bash
 # Clear old memory files
-find ~/.claude/projects/*/memory/ -name "*.md" -mtime +30 -delete
+find ~/.Codex/projects/*/memory/ -name "*.md" -mtime +30 -delete
 
 # Sanitize memory files
-sed -i 's/sk-[a-zA-Z0-9]\{48\}/[REDACTED]/g' ~/.claude/projects/*/memory/*.md
+sed -i 's/sk-[a-zA-Z0-9]\{48\}/[REDACTED]/g' ~/.Codex/projects/*/memory/*.md
 ```
 
 ## 🔄 Whitelist Management
@@ -310,7 +310,7 @@ sed -i 's/sk-[a-zA-Z0-9]\{48\}/[REDACTED]/g' ~/.claude/projects/*/memory/*.md
 ### Create Whitelist
 For known false positives:
 ```bash
-# ~/.claude/dlp-whitelist.txt
+# ~/.Codex/dlp-whitelist.txt
 # Format: pattern|file_path|reason
 
 0x1234567890abcdef|example.md|Documentation example
@@ -327,7 +327,7 @@ scan_with_whitelist() {
     # Filter out whitelisted items
     while IFS='|' read -r wl_pattern wl_path wl_reason; do
         results=$(echo "$results" | grep -v "$wl_path")
-    done < ~/.claude/dlp-whitelist.txt
+    done < ~/.Codex/dlp-whitelist.txt
 
     echo "$results"
 }
@@ -347,13 +347,13 @@ scan_with_whitelist() {
 ## CRITICAL Findings
 
 ### 1. Ethereum Private Key
-- **File**: ~/.claude/projects/project-x/memory/2026-03-04.md
+- **File**: ~/.Codex/projects/project-x/memory/2026-03-04.md
 - **Line**: 42
 - **Pattern**: 0x1234...abcd
 - **Action**: ROTATE IMMEDIATELY
 
 ### 2. OpenAI API Key
-- **File**: ~/.claude/workspace/test.py
+- **File**: ~/.Codex/workspace/test.py
 - **Line**: 15
 - **Pattern**: sk-proj-...
 - **Action**: ROTATE IMMEDIATELY
@@ -361,7 +361,7 @@ scan_with_whitelist() {
 ## HIGH Findings
 
 ### 1. GitHub Token
-- **File**: ~/.claude/logs/session.log
+- **File**: ~/.Codex/logs/session.log
 - **Line**: 89
 - **Pattern**: ghp_...
 - **Action**: Review and rotate if active
